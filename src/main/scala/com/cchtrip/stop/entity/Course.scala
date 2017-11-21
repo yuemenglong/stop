@@ -18,6 +18,13 @@ class Course extends EntityBase {
   var courseType: CourseType = _
 
   @OneToMany
-  var students: Array[Student] = Array()
+  var questions: Array[Question] = Array()
+  @OneToMany
+  var coursewares: Array[Courseware] = Array()
+  @OneToMany
+  var videos: Array[Video] = Array()
 
+  var questionCount: Integer = _
+  var coursewareCount: Integer = _
+  var videoCount: Integer = _
 }

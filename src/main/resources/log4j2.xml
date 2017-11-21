@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error">
+	<Properties>
+		<Property name="projectName">cchtrip-v2</Property>
+	</Properties>
+	<!--先定义所有的appender -->
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" />
+		</Console>
+
+		<!-- "循环"的日志文件: 意思是日志文件大于阀值的时候，就开始写一个新的日志文件 -->
+		<!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+		<RollingFile name="RollingFile" fileName="logs/${projectName}_all.log" filePattern="logs/$${date:yyyy-MM}/${projectName}_all-%d{yyyy-MM-dd}.log.gz">
+			<PatternLayout>
+				<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<!-- 每天更新一次 -->
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+		<!-- 单独为ERROR以上的信息输出到单独的文件 -->
+		<RollingFile name="ERRORRollingFile" fileName="logs/${projectName}_error.log" filePattern="logs/$${date:yyyy-MM}/${projectName}_error-%d{yyyy-MM-dd}.log.gz">
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout>
+				<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %class{1}:%L - %msg%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<!-- 每天更新一次 -->
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+	</Appenders>
+
+
+	<!--然后定义logger，只有定义了logger并引入的appender，appender才会生效 -->
+	<Loggers>
+		<!--建立一个默认的root的logger -->
+		<root level="info">
+			<appender-ref ref="Console" />
+			<appender-ref ref="ERRORRollingFile" />
+			<appender-ref ref="RollingFile" />
+		</root>
+	</Loggers>
+
+</Configuration>

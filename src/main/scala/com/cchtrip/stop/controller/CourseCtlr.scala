@@ -1,7 +1,7 @@
 package com.cchtrip.stop.controller
 
 import com.cchtrip.stop.bean.Dao
-import com.cchtrip.stop.entity.Course
+import com.cchtrip.stop.entity.{Course, Courseware}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -20,7 +20,7 @@ class CourseCtlr {
   @Autowired
   var dao: Dao = _
 
-  @GetMapping(Array(""))
+  @GetMapping(Array("/list"))
   def listCourse(@RequestParam(defaultValue = "20") limit: Long,
                  @RequestParam(defaultValue = "0") offset: Long
                 ): String = dao.beginTransaction(session => {
@@ -31,7 +31,7 @@ class CourseCtlr {
   })
 
   @GetMapping(Array("/count"))
-  def listCourse: String = dao.beginTransaction(session => {
+  def listCourseCount: String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Course])
     val query = Orm.select(root.count()).from(root)
     val count = session.first(query)
@@ -56,14 +56,29 @@ class CourseCtlr {
     JSON.stringify(course)
   })
 
+  @PutMapping(Array("/{id}"))
+  def putCourse(@RequestBody body: String): String = dao.beginTransaction(session => {
+    val course = JSON.parse(body, classOf[Course])
+    session.execute(Orm.update(course))
+    JSON.stringify(course)
+  })
+
   @DeleteMapping(Array("/{id}"))
   def deleteCourse(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Course])
     val ex = Orm.delete(root,
-      root.join("coursewares"),
-      root.join("questions"),
-      root.join("videos"),
+      root.leftJoin("coursewares"),
+      root.leftJoin("questions"),
+      root.leftJoin("videos"),
     ).from(root).where(root.get("id").eql(id))
     session.execute(ex).toString
+  })
+
+  @PostMapping(Array("/{id}/courseware"))
+  def postCourseware(@PathVariable cid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+    val courseware = JSON.parse(body, classOf[Courseware])
+    courseware.courseId = cid
+    session.execute(Orm.insert(courseware))
+    JSON.stringify(courseware)
   })
 }

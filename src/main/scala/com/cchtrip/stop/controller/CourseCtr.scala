@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation._
 @Controller
 @RequestMapping(value = Array("/course"), produces = Array("application/json"))
 @ResponseBody
-class CourseCtlr {
+class CourseCtr {
 
   @Autowired
   var dao: Dao = _
@@ -72,13 +72,5 @@ class CourseCtlr {
       root.leftJoin("videos"),
     ).from(root).where(root.get("id").eql(id))
     session.execute(ex).toString
-  })
-
-  @PostMapping(Array("/{id}/courseware"))
-  def postCourseware(@PathVariable cid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
-    val courseware = JSON.parse(body, classOf[Courseware])
-    courseware.courseId = cid
-    session.execute(Orm.insert(courseware))
-    JSON.stringify(courseware)
   })
 }

@@ -9,13 +9,4 @@ import io.github.yuemenglong.orm.lang.anno.{Column, Entity, OneToMany, Pointer}
 class CourseType extends EntityBase {
   @Column(length = 32)
   var name: String = _
-
-  var difficulty: String = _
-
-  @Pointer
-  var courseType: CourseType = _
-
-  @OneToMany
-  var students: Array[Student] = Array()
-
 }

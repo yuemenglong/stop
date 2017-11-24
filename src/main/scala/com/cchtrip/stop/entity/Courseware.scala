@@ -9,8 +9,19 @@ import io.github.yuemenglong.orm.lang.types.Types._
 @Entity
 class Courseware extends EntityBase {
 
-  @Column(length = 32)
+  @Column(length = 64)
   var name: String = _
 
   var courseId: Long = _
+
+  @Column(length = 64)
+  var fileId: String = _
+
+  @Column(length = 64)
+  var fineName: String = _
+
+  var size: Integer = _
+
+  @Column(length = 16)
+  var ext: String = _
 }

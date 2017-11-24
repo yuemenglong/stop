@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, Resp
 @Controller
 @RequestMapping(value = Array("/student"), produces = Array("application/json"))
 @ResponseBody
-class StudentCtlr {
+class StudentCtr {
 
   @GetMapping(Array(""))
   def index: String = {

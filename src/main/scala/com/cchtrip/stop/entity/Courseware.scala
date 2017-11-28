@@ -14,11 +14,11 @@ class Courseware extends EntityBase {
 
   var courseId: Long = _
 
-  @Column(length = 64)
+  @Column(length = 80)
   var fileId: String = _
 
   @Column(length = 64)
-  var fineName: String = _
+  var fileName: String = _
 
   var size: Integer = _
 

@@ -48,9 +48,9 @@ class Dao {
     Orm.setLogger(show_sql)
     JSON.setConstructorMap(OrmTool.getEmptyConstructorMap)
     db = new Db(host, port, user, password, database, minConn, maxConn, partition)
-    db.rebuild()
+//    db.rebuild()
     OrmTool.exportTsClass("entity.ts")
-    db.check(true)
+    db.check()
   }
 
   @PreDestroy

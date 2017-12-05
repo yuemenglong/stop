@@ -1,6 +1,7 @@
 package com.cchtrip.stop.entity
 
 import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Id, Pointer}
+import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
@@ -24,6 +25,9 @@ class Student extends EntityBase {
 
   @Column(length = 64)
   var avatar: String = _
+
+  @Column(nullable = false)
+  var clazzId: Long = _
 
   @Pointer
   var clazz: Clazz = _

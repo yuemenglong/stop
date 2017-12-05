@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation._
   */
 @RestController
 @RequestMapping(value = Array("/course/{cid}"), produces = Array("application/json"))
-class CourseEditCtr {
+class CourseInfoCtr {
 
   @Autowired
   var dao: Dao = _
@@ -25,6 +25,14 @@ class CourseEditCtr {
     c.courseId = cid
     c.crTime = new Date()
     session.execute(Orm.insert(c))
+    JSON.stringify(c)
+  })
+
+  @PutMapping(Array("/courseware/{wid}"))
+  def putCourseware(@PathVariable wid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+    val c = JSON.parse(body, classOf[Courseware])
+    c.id = wid
+    session.execute(Orm.update(c))
     JSON.stringify(c)
   })
 
@@ -43,6 +51,14 @@ class CourseEditCtr {
     c.crTime = new Date()
     session.execute(Orm.insert(c))
     JSON.stringify(c)
+  })
+
+  @PutMapping(Array("/video/{vid}"))
+  def PutVideo(@PathVariable vid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+    val v = JSON.parse(body, classOf[Video])
+    v.id = vid
+    session.execute(Orm.update(v))
+    JSON.stringify(v)
   })
 
   @DeleteMapping(Array("/video/{id}"))

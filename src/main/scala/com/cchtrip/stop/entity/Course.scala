@@ -15,7 +15,7 @@ class Course extends EntityBase {
   var difficulty: String = _
 
   @Pointer
-  var courseType: CourseType = _
+  var category: CourseCategory = _
 
   @OneToMany
   var questions: Array[Question] = Array()

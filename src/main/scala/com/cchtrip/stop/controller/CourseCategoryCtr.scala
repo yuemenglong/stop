@@ -44,18 +44,23 @@ class CourseCategoryCtr {
   })
 
   @GetMapping(Array(""))
-  def getCategoryAll: String = dao.beginTransaction(session => {
+  def getCategoryAll(level: Integer): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[CourseCategory])
-    val res = session.query(Orm.selectFrom(root))
-    val map: Map[Long, CourseCategory] = res.map(c => (c.id, c))(collection.breakOut)
-    res.foreach(c => {
-      c.children = Array()
-      if (map.contains(c.parentId)) {
-        map(c.parentId).children ++= Array(c)
-      }
-    })
-    val ret = map.values.filter(_.level == 0).toArray
-    JSON.stringify(ret)
+    if (level == null) {
+      val res = session.query(Orm.selectFrom(root))
+      val map: Map[Long, CourseCategory] = res.map(c => (c.id, c))(collection.breakOut)
+      res.foreach(c => {
+        c.children = Array()
+        if (map.contains(c.parentId)) {
+          map(c.parentId).children ++= Array(c)
+        }
+      })
+      val ret = map.values.filter(_.level == 0).toArray
+      JSON.stringify(ret)
+    } else {
+      val res = session.query(Orm.selectFrom(root).where(root.get("level").eql(level)))
+      JSON.stringify(res)
+    }
   })
 
   @DeleteMapping(Array("/{id}"))

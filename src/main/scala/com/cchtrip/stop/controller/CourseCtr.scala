@@ -22,10 +22,15 @@ class CourseCtr {
 
   @GetMapping(Array("/list"))
   def listCourse(@RequestParam(defaultValue = "20") limit: Long,
-                 @RequestParam(defaultValue = "0") offset: Long
+                 @RequestParam(defaultValue = "0") offset: Long,
+                 categoryId: Long,
                 ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Course])
-    val query = Orm.selectFrom(root).limit(limit).offset(offset)
+    var cond = Orm.cond()
+    if (categoryId != null) {
+      cond = cond.and(root.get("categoryId").eql(categoryId))
+    }
+    val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
     JSON.stringify(res)
   })

@@ -26,13 +26,15 @@ class ErrorProcessor {
   @ResponseBody
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
   def handle(request: HttpServletRequest, e: Exception): String = {
+    logger.error(e.getStackTrace.map(ste => {
+      ste.toString
+    }).mkString("\n"))
     val name = e match {
       case ne: NamedException => ne.name
       case _ => e.getClass.getName
     }
     val map = Map("name" -> name, "message" -> e.getMessage)
     val ret = JSON.stringify(map)
-    logger.error(ret)
     ret
   }
 }

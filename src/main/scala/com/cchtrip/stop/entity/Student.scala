@@ -1,6 +1,6 @@
 package com.cchtrip.stop.entity
 
-import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Id, Pointer}
+import io.github.yuemenglong.orm.lang.anno._
 import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
@@ -31,4 +31,7 @@ class Student extends EntityBase {
 
   @Pointer
   var clazz: Clazz = _
+
+  @OneToMany
+  var jobs: Array[StudentStudyJob] = Array()
 }

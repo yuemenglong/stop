@@ -23,7 +23,7 @@ class StudentCtr {
   def postStudent(@RequestBody body: String): String = dao.beginTransaction(session => {
     val student = JSON.parse(body, classOf[Student])
     student.crTime = new Date
-    student.clazzId = 0
+    student.clazzId = 0L
     session.execute(Orm.insert(student))
     JSON.stringify(student)
   })

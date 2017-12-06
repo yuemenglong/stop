@@ -4,6 +4,7 @@ import java.util
 import java.util.regex.Pattern
 import javax.annotation.{PostConstruct, PreDestroy}
 
+import com.cchtrip.stop.entity.StudentStudyJobRel
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.Session.Session
@@ -48,7 +49,7 @@ class Dao {
     Orm.setLogger(show_sql)
     JSON.setConstructorMap(OrmTool.getEmptyConstructorMap)
     db = new Db(host, port, user, password, database, minConn, maxConn, partition)
-//    db.rebuild()
+    //    db.rebuild()
     OrmTool.exportTsClass("entity.ts")
     db.check()
   }

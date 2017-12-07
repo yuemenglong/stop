@@ -1,5 +1,6 @@
 package com.cchtrip.stop.entity
 
+import io.github.yuemenglong.json.lang.JsonDate
 import io.github.yuemenglong.orm.lang.anno._
 import io.github.yuemenglong.orm.lang.types.Types._
 
@@ -17,6 +18,7 @@ class StudyJob extends EntityBase {
   var clazz: Clazz = _
   var clazzId: Long = _
 
+  @JsonDate
   var limitDate: Date = _
 
   @OneToMany(right = "jobId")

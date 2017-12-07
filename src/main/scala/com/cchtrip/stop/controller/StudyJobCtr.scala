@@ -91,11 +91,6 @@ class StudyJobCtr {
     "{}"
   })
 
-  @GetMapping(Array("/{id}"))
-  def getStudyJob(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val job = OrmTool.selectById(classOf[StudyJob], id, session)
-    JSON.stringify(job)
-  })
 
   @GetMapping(Array("/list"))
   def getStudyJobList(@RequestParam(defaultValue = "20") limit: Long,
@@ -108,7 +103,7 @@ class StudyJobCtr {
   })
 
   @GetMapping(Array("/count"))
-  def getStudyJobCount(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def getStudyJobCount: String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[StudyJob])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
@@ -120,6 +115,12 @@ class StudyJobCtr {
     val job = JSON.parse(body, classOf[StudyJob])
     job.id = id
     session.execute(Orm.update(job))
+    JSON.stringify(job)
+  })
+
+  @GetMapping(Array("/{id}"))
+  def getStudyJob(@PathVariable id: Long): String = dao.beginTransaction(session => {
+    val job = OrmTool.selectById(classOf[StudyJob], id, session)
     JSON.stringify(job)
   })
 }

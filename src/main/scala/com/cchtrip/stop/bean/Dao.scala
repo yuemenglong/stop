@@ -4,7 +4,7 @@ import java.util
 import java.util.regex.Pattern
 import javax.annotation.{PostConstruct, PreDestroy}
 
-import com.cchtrip.stop.entity.StudentStudyJobRel
+import com.cchtrip.stop.entity.StudentStudyJobItem
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.Session.Session

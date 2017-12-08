@@ -2,11 +2,11 @@ package com.cchtrip.stop.controller
 
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
-import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.interfaces.Entity
 import io.github.yuemenglong.orm.lang.types.Types._
+import io.github.yuemenglong.orm.operate.traits.core.Root
 import io.github.yuemenglong.orm.tool.OrmTool
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation._
@@ -35,7 +35,7 @@ class StudyJobCtr {
       val ids = session.query(Orm.selectFrom(root).where(root.get("id").eql(job.courseId)))
         .map(_.asInstanceOf[Entity].$$core().fieldMap("id").asInstanceOf[Long])
       ids.map(id => {
-        val rel = new StudentStudyJobRel
+        val rel = new StudentStudyJobItem
         rel.crTime = new Date
         rel.status = "waiting"
         rel.targetId = id
@@ -59,13 +59,14 @@ class StudyJobCtr {
     val studentJobs = studentIds.map(id => {
       val sj = new StudentStudyJob
       sj.crTime = new Date
+      sj.studentId = id
       sj.jobId = job.id
       Orm.convert(sj)
     })
     session.execute(Orm.insert(classOf[StudentStudyJob]).values(studentJobs))
     val jobItems = studentJobs.flatMap(sj => {
       snapJobItems.map(jobItem => {
-        val ret = new StudentStudyJobRel
+        val ret = new StudentStudyJobItem
         ret.crTime = jobItem.crTime
         ret.studentStudyJobId = sj.id
         ret.targetId = jobItem.targetId
@@ -74,7 +75,7 @@ class StudyJobCtr {
         Orm.convert(ret)
       })
     })
-    session.execute(Orm.insert(classOf[StudentStudyJobRel]).values(jobItems))
+    session.execute(Orm.insert(classOf[StudentStudyJobItem]).values(jobItems))
     JSON.stringify(job)
   })
 
@@ -85,7 +86,7 @@ class StudyJobCtr {
     //3. 删除jobItem
     val root = Orm.root(classOf[StudyJob])
     val ex = Orm.delete(root, root.leftJoin("jobs"),
-      root.leftJoin("jobs").leftJoinAs("id", "studentStudyJobId", classOf[StudentStudyJobRel]))
+      root.leftJoin("jobs").leftJoinAs("id", "studentStudyJobId", classOf[StudentStudyJobItem]))
       .from(root).where(root.get("id").eql(id))
     session.execute(ex)
     "{}"
@@ -120,7 +121,25 @@ class StudyJobCtr {
 
   @GetMapping(Array("/{id}"))
   def getStudyJob(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val job = OrmTool.selectById(classOf[StudyJob], id, session)
+    val job = OrmTool.selectById(classOf[StudyJob], id, session, (root: Root[StudyJob]) => {
+      root.select("jobs").select("student")
+    })
+    val jobIds = job.jobs.map(_.id)
+    val items = {
+      val root = Orm.root(classOf[StudentStudyJobItem])
+      val query = Orm.selectFrom(root).where(root.get("studentStudyJobId").in(jobIds))
+      session.query(query)
+    }
+    job.jobs.foreach(j => {
+      j.items = Array()
+    })
+    items.groupBy(_.studentStudyJobId).foreach { case (sjId, arr) =>
+      job.jobs.foreach(j => {
+        if (j.id == sjId) {
+          j.items = arr
+        }
+      })
+    }
     JSON.stringify(job)
   })
 }

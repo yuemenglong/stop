@@ -34,15 +34,19 @@ class StudentStudyJob extends EntityBase {
   var student: Student = _
   var studentId: Long = _
 
+  @Enum(Array("waiting", "succ"))
+  var status: String = _
+
   @OneToMany
-  var jobItems: Array[StudentStudyJobRel] = Array()
+  var items: Array[StudentStudyJobItem] = Array()
 }
 
 @Entity
-class StudentStudyJobRel extends EntityBase {
+class StudentStudyJobItem extends EntityBase {
   var studentStudyJobId: Long = _
   var targetId: Long = _
   var ty: String = _ // 可能为courseware,video,question
+  @Enum(Array("waiting", "succ"))
   var status: String = _
 }
 

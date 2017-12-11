@@ -8,13 +8,8 @@ import io.github.yuemenglong.orm.lang.types.Types._
   */
 @Entity
 class QuestionChoice extends EntityBase {
-  @Pointer
-  var qt: Question = _
-
-  var opt1: String = _
-  var opt2: String = _
-  var opt3: String = _
-  var opt4: String = _
-
-  var answer: Integer = _
+  var a: String = _
+  var b: String = _
+  var c: String = _
+  var d: String = _
 }

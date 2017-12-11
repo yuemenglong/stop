@@ -17,11 +17,12 @@ class Question extends EntityBase {
   @Column(nullable = false)
   var score: Double = _
 
+  @Column(length = 64)
+  var answer: String = _
+
   @Column(length = 8, nullable = false)
   var ty: String = _
 
   @OneToOne(right = "qtId")
   var sc: QuestionChoice = _
-  @OneToOne(right = "qtId")
-  var tf: QuestionTrueFalse = _
 }

@@ -48,5 +48,10 @@ class StudentStudyJobItem extends EntityBase {
   var ty: String = _ // 可能为courseware,video,question
   @Enum(Array("waiting", "succ"))
   var status: String = _
+
+  @Column(length = 4)
+  var answer: String = _
+  var correct: Boolean = _
+  var score: Double = _
 }
 

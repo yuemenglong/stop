@@ -79,9 +79,6 @@ class CourseInfoCtr {
     if (q.sc != null) {
       q.sc.crTime = q.crTime
       ex.insert("sc")
-    } else if (q.tf != null) {
-      q.tf.crTime = q.crTime
-      ex.insert("tf")
     }
     session.execute(ex)
     JSON.stringify(q)
@@ -92,7 +89,6 @@ class CourseInfoCtr {
                   @PathVariable qid: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
-    root.select("tf")
     val q = session.first(Orm.selectFrom(root).where(root.get("id").eql(qid)))
     JSON.stringify(q)
   })
@@ -106,7 +102,6 @@ class CourseInfoCtr {
     q.id = qid
     val ex = Orm.update(q)
     ex.update("sc")
-    ex.update("tf")
     session.execute(ex)
     JSON.stringify(q)
   })
@@ -114,7 +109,7 @@ class CourseInfoCtr {
   @DeleteMapping(Array("/question/{id}"))
   def deleteQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Question])
-    val ex = Orm.delete(root, root.leftJoin("sc"), root.leftJoin("tf"))
+    val ex = Orm.delete(root, root.leftJoin("sc"))
       .from(root).where(root.get("id").eql(id))
     session.execute(ex)
     "{}"

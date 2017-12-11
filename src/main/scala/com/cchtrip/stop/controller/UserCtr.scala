@@ -4,7 +4,9 @@ import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
+import io.github.yuemenglong.orm.Session.Session
 import io.github.yuemenglong.orm.lang.types.Types._
+import io.github.yuemenglong.orm.operate.traits.core.Root
 import io.github.yuemenglong.orm.tool.OrmTool
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation._
@@ -52,7 +54,6 @@ class UserCtr {
   def getQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
-    root.select("tf")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val question = session.first(query)
     JSON.stringify(question)

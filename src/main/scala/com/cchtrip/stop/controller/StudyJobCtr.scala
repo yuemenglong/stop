@@ -32,7 +32,7 @@ class StudyJobCtr {
     def getIds[T](clazz: Class[T], ty: String) = {
       val root = Orm.root(clazz)
       root.fields()
-      val ids = session.query(Orm.selectFrom(root).where(root.get("id").eql(job.courseId)))
+      val ids = session.query(Orm.selectFrom(root).where(root.get("courseId").eql(job.courseId)))
         .map(_.asInstanceOf[Entity].$$core().fieldMap("id").asInstanceOf[Long])
       ids.map(id => {
         val rel = new StudentStudyJobItem

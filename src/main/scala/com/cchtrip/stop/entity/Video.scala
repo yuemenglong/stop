@@ -14,7 +14,7 @@ class Video extends EntityBase {
 
   var courseId: Long = _
 
-  @Column(length = 80)
+  @Column(length = 80, nullable = false)
   var fileId: String = _
 
   @Column(length = 64)

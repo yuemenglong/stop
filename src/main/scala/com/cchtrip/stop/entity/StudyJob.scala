@@ -49,6 +49,7 @@ class StudentStudyJobItem extends EntityBase {
   @Enum(Array("waiting", "succ"))
   var status: String = _
 
+  // 兼容题目
   @Column(length = 4)
   var answer: String = _
   var correct: Boolean = _

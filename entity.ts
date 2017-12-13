@@ -53,6 +53,7 @@ export class Question {
 	answer: string = undefined;
 	ty: string = undefined;
 	sc: QuestionChoice = new QuestionChoice();
+	categoryId: number = undefined;
 }
 
 export class QuestionChoice {

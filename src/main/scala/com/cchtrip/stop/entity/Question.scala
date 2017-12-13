@@ -25,4 +25,6 @@ class Question extends EntityBase {
 
   @OneToOne(right = "qtId")
   var sc: QuestionChoice = _
+
+  var categoryId: Long = _
 }

@@ -1,7 +1,7 @@
 package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.Dao
-import com.cchtrip.stop.entity.{Course, Category}
+import com.cchtrip.stop.entity.{Category, Course, Question}
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @Controller
-@RequestMapping(value = Array("/course-category"), produces = Array("application/json"))
+@RequestMapping(value = Array("/course-category", "/question-category"), produces = Array("application/json"))
 @ResponseBody
-class CourseCategoryCtr {
+class CategoryCtr {
 
   @Autowired
   var dao: Dao = _
@@ -44,10 +44,12 @@ class CourseCategoryCtr {
   })
 
   @GetMapping(Array(""))
-  def getCategoryAll(level: Integer): String = dao.beginTransaction(session => {
+  def getCategoryAll(level: Integer,
+                     @RequestParam(required = true) ty: String,
+                    ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Category])
     if (level == null) {
-      val res = session.query(Orm.selectFrom(root))
+      val res = session.query(Orm.selectFrom(root).where(root.get("ty").eql(ty)))
       val map: Map[Long, Category] = res.map(c => (c.id, c))(collection.breakOut)
       res.foreach(c => {
         c.children = Array()
@@ -58,15 +60,18 @@ class CourseCategoryCtr {
       val ret = map.values.filter(_.level == 0).toArray
       JSON.stringify(ret)
     } else {
-      val res = session.query(Orm.selectFrom(root).where(root.get("level").eql(level)))
+      val res = session.query(Orm.selectFrom(root)
+        .where(root.get("level").eql(level).and(root.get("ty").eql(ty))))
       JSON.stringify(res)
     }
   })
 
   @DeleteMapping(Array("/{id}"))
-  def deleteCategory(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def deleteCategory(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
     //1. 没有子节点才能删
     //2. 没有课程相关联才能删
+    val cate = OrmTool.selectById(classOf[Category], id, session)
+
     {
       val root = Orm.root(classOf[Category])
       val count = session.first(Orm.select(root.count()).from(root).where(root.get("parentId").eql(id)))
@@ -74,12 +79,19 @@ class CourseCategoryCtr {
         throw NamedException(NamedException.DEL_CATE_FAIL, "子类型不为空")
       }
     }
-    {
-      val root = Orm.root(classOf[Course])
-      val count = session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
-      if (count > 0) {
-        throw NamedException(NamedException.DEL_CATE_FAIL, "还有课程相关联")
-      }
+    cate.ty match {
+      case "course" =>
+        val root = Orm.root(classOf[Course])
+        val count = session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
+        if (count > 0) {
+          throw NamedException(NamedException.DEL_CATE_FAIL, "还有课程相关联")
+        }
+      case "question" =>
+        val root = Orm.root(classOf[Question])
+        val count = session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
+        if (count > 0) {
+          throw NamedException(NamedException.DEL_CATE_FAIL, "还有题目相关联")
+        }
     }
     OrmTool.deleteById(classOf[Category], id, session)
     "{}"

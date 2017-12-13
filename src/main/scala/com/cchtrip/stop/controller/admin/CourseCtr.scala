@@ -55,7 +55,7 @@ class CourseCtr {
   def getCourse(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Course])
     root.select("coursewares")
-    root.select("questions")
+    root.select("questions").select("sc")
     root.select("videos")
     val course = session.first(Orm.selectFrom(root).where(root.get("id").eql(id)))
     JSON.stringify(course)

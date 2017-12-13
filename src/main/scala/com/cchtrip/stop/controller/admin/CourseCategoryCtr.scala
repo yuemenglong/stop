@@ -1,7 +1,7 @@
 package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.Dao
-import com.cchtrip.stop.entity.{Course, CourseCategory}
+import com.cchtrip.stop.entity.{Course, Category}
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -24,7 +24,7 @@ class CourseCategoryCtr {
 
   @PostMapping(Array(""))
   def newCategory(@RequestBody body: String): String = dao.beginTransaction(session => {
-    val cate = JSON.parse(body, classOf[CourseCategory])
+    val cate = JSON.parse(body, classOf[Category])
     cate.crTime = new Date
     if (cate.level == null || cate.parentId == null) {
       cate.level = 0
@@ -37,7 +37,7 @@ class CourseCategoryCtr {
   //包括更新父子关系
   @PutMapping(Array("/{id}"))
   def putCategory(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
-    val cate = JSON.parse(body, classOf[CourseCategory])
+    val cate = JSON.parse(body, classOf[Category])
     cate.id = id
     session.execute(Orm.update(cate))
     JSON.stringify(cate)
@@ -45,10 +45,10 @@ class CourseCategoryCtr {
 
   @GetMapping(Array(""))
   def getCategoryAll(level: Integer): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[CourseCategory])
+    val root = Orm.root(classOf[Category])
     if (level == null) {
       val res = session.query(Orm.selectFrom(root))
-      val map: Map[Long, CourseCategory] = res.map(c => (c.id, c))(collection.breakOut)
+      val map: Map[Long, Category] = res.map(c => (c.id, c))(collection.breakOut)
       res.foreach(c => {
         c.children = Array()
         if (map.contains(c.parentId)) {
@@ -68,20 +68,20 @@ class CourseCategoryCtr {
     //1. 没有子节点才能删
     //2. 没有课程相关联才能删
     {
-      val root = Orm.root(classOf[CourseCategory])
+      val root = Orm.root(classOf[Category])
       val count = session.first(Orm.select(root.count()).from(root).where(root.get("parentId").eql(id)))
       if (count > 0) {
-        throw NamedException("DEL_CATE_FAIL", "子类型不为空")
+        throw NamedException(NamedException.DEL_CATE_FAIL, "子类型不为空")
       }
     }
     {
       val root = Orm.root(classOf[Course])
       val count = session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
       if (count > 0) {
-        throw NamedException("DEL_CATE_FAIL", "还有课程相关联")
+        throw NamedException(NamedException.DEL_CATE_FAIL, "还有课程相关联")
       }
     }
-    OrmTool.deleteById(classOf[CourseCategory], id, session)
+    OrmTool.deleteById(classOf[Category], id, session)
     "{}"
   })
 

@@ -1,9 +1,20 @@
+export class Category {
+	id: number = undefined;
+	crTime: string = undefined;
+	name: string = undefined;
+	level: number = undefined;
+	parentId: number = undefined;
+	ty: string = undefined;
+	parent: Category = undefined;
+	children: Category[] = [];
+}
+
 export class Clazz {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
 	studentCount: number = undefined;
-	students: Array<Student> = [];
+	students: Student[] = [];
 }
 
 export class Course {
@@ -13,23 +24,13 @@ export class Course {
 	description: string = undefined;
 	difficulty: string = undefined;
 	categoryId: number = undefined;
+	category: Category = new Category();
+	questions: Question[] = [];
+	coursewares: Courseware[] = [];
+	videos: Video[] = [];
 	questionCount: number = undefined;
 	coursewareCount: number = undefined;
 	videoCount: number = undefined;
-	category: CourseCategory = new CourseCategory();
-	questions: Array<Question> = [];
-	coursewares: Array<Courseware> = [];
-	videos: Array<Video> = [];
-}
-
-export class CourseCategory {
-	id: number = undefined;
-	crTime: string = undefined;
-	name: string = undefined;
-	level: number = undefined;
-	parentId: number = undefined;
-	parent: CourseCategory = undefined;
-	children: Array<CourseCategory> = [];
 }
 
 export class Courseware {
@@ -72,20 +73,21 @@ export class Student {
 	password: string = undefined;
 	email: string = undefined;
 	avatar: string = undefined;
-	clazzId: number = undefined;
 	clazz: Clazz = new Clazz();
-	jobs: Array<StudentStudyJob> = [];
+	clazzId: number = undefined;
+	team: TeamApply = new TeamApply();
+	jobs: StudentStudyJob[] = [];
 }
 
 export class StudentStudyJob {
 	id: number = undefined;
 	crTime: string = undefined;
+	job: StudyJob = new StudyJob();
 	jobId: number = undefined;
+	student: Student = new Student();
 	studentId: number = undefined;
 	status: string = undefined;
-	job: StudyJob = new StudyJob();
-	student: Student = new Student();
-	items: Array<StudentStudyJobItem> = [];
+	items: StudentStudyJobItem[] = [];
 }
 
 export class StudentStudyJobItem {
@@ -104,19 +106,32 @@ export class StudyJob {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
+	course: Course = new Course();
 	courseId: number = undefined;
+	clazz: Clazz = new Clazz();
 	clazzId: number = undefined;
 	limitDate: string = undefined;
-	course: Course = new Course();
-	clazz: Clazz = new Clazz();
-	jobs: Array<StudentStudyJob> = [];
+	jobs: StudentStudyJob[] = [];
 }
 
 export class Team {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
-	students: Array<Student> = [];
+	creater: Student = new Student();
+	createrId: number = undefined;
+	students: TeamApply[] = [];
+	studentCount: number = undefined;
+}
+
+export class TeamApply {
+	id: number = undefined;
+	crTime: string = undefined;
+	student: Student = undefined;
+	studentId: number = undefined;
+	team: Team = undefined;
+	teamId: number = undefined;
+	status: string = undefined;
 }
 
 export class Video {

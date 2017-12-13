@@ -1,13 +1,13 @@
 package com.cchtrip.stop.entity
 
-import io.github.yuemenglong.orm.lang.anno.{Column, Entity, OneToMany, Pointer}
+import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Enum, OneToMany, Pointer}
 import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @Entity
-class CourseCategory extends EntityBase {
+class Category extends EntityBase {
   @Column(length = 32)
   var name: String = _
 
@@ -15,9 +15,12 @@ class CourseCategory extends EntityBase {
 
   var parentId: Long = _
 
+  @Enum(Array("course", "question"))
+  var ty: String = _
+
   @Pointer
-  var parent: CourseCategory = _
+  var parent: Category = _
 
   @OneToMany(left = "id", right = "parentId")
-  var children: Array[CourseCategory] = Array()
+  var children: Array[Category] = Array()
 }

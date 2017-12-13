@@ -26,11 +26,12 @@ class Student extends EntityBase {
   @Column(length = 64)
   var avatar: String = _
 
-  @Column(nullable = false)
-  var clazzId: Long = _
-
   @Pointer
   var clazz: Clazz = _
+  var clazzId: Long = _
+
+  @OneToOne
+  var team: TeamApply = _
 
   @OneToMany
   var jobs: Array[StudentStudyJob] = Array()

@@ -6,6 +6,7 @@ package com.cchtrip.stop.util
 object NamedException {
   val INVALID_PARAM = "INVALID_PARAM"
   val DEL_CATE_FAIL = "DEL_CATE_FAIL"
+  val LOGIN_FAIL = "LOGIN_FAIL"
 }
 
 case class NamedException(name: String, message: String) extends RuntimeException(message) {

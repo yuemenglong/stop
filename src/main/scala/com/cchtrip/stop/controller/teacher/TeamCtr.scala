@@ -1,4 +1,4 @@
-package com.cchtrip.stop.controller.admin
+package com.cchtrip.stop.controller.teacher
 
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity.{Student, Team, TeamApply}

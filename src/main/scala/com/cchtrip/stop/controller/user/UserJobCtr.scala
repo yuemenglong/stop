@@ -129,6 +129,7 @@ class UserJobCtr {
   def getQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
+    root.ignore("answer")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val question = session.first(query)
     JSON.stringify(question)

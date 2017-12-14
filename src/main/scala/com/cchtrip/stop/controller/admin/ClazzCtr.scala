@@ -103,11 +103,11 @@ class ClazzCtr {
   @DeleteMapping(Array("/{id}/student/{sid}"))
   def deleteClazzStudent(@PathVariable id: Long,
                          @PathVariable sid: Long): String = dao.beginTransaction(session => {
-    val clazz = Orm.create(classOf[Clazz])
-    clazz.id = id
-    session.execute(Orm.delete(clazz))
-    val root = Orm.root(classOf[Clazz])
-    session.execute(Orm.update(root).set(root.get("studentCount").assignSub(1)))
+    {
+      val root = Orm.root(classOf[Clazz])
+      session.execute(Orm.update(root).set(root.get("studentCount").assignSub(1)))
+    }
+    OrmTool.updateById(classOf[Student], sid, session, ("clazzId", 0))
     "{}"
   })
 }

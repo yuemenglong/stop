@@ -8,11 +8,12 @@ import io.github.yuemenglong.orm.lang.types.Types._
   */
 @Entity
 class Student extends EntityBase {
-  @Column(length = 32)
-  var loginName: String = _
+
+  @Pointer
+  var user: User = _
 
   @Column(length = 32)
-  var userName: String = _
+  var name: String = _
 
   @Column(length = 16)
   var mobile: String = _

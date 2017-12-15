@@ -6,6 +6,7 @@ import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import org.springframework.web.bind.annotation._
 import io.github.yuemenglong.orm.lang.types.Types._
+import io.github.yuemenglong.orm.operate.traits.core.Root
 import io.github.yuemenglong.orm.tool.OrmTool
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -24,21 +25,27 @@ class StudentCtr {
     val student = JSON.parse(body, classOf[Student])
     student.crTime = new Date
     student.clazzId = 0L
-    session.execute(Orm.insert(student))
+    student.user.ty = "student"
+    student.user.crTime = new Date
+    val ex = Orm.insert(student)
+    ex.insert("user")
+    session.execute(ex)
     JSON.stringify(student)
   })
 
   @DeleteMapping(Array("/{id}"))
   def deleteStudent(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val student = Orm.create(classOf[Student])
-    student.id = id
-    session.execute(Orm.delete(student))
+    OrmTool.deleteById(classOf[Student], id, session, (root: Root[Student]) => {
+      Array(root.leftJoin("user"))
+    })
     "{}"
   })
 
   @GetMapping(Array("/{id}"))
   def getStudent(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val res = OrmTool.selectById(classOf[Student], id, session)
+    val res = OrmTool.selectById(classOf[Student], id, session, (root: Root[Student]) => {
+      root.select("user")
+    })
     JSON.stringify(res)
   })
 
@@ -46,7 +53,9 @@ class StudentCtr {
   def putStudent(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val student = JSON.parse(body, classOf[Student])
     student.id = id
-    session.execute(Orm.update(student))
+    val ex = Orm.update(student)
+    ex.update("user")
+    session.execute(ex)
     JSON.stringify(student)
   })
 
@@ -54,7 +63,7 @@ class StudentCtr {
   def GetStudentsList(@RequestParam(defaultValue = "20") limit: Long,
                       @RequestParam(defaultValue = "0") offset: Long
                      ): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Student]).ignore("password")
+    val root = Orm.root(classOf[Student])
     val query = Orm.selectFrom(root).limit(limit).offset(offset)
     val res = session.query(query)
     JSON.stringify(res)

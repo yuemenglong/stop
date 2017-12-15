@@ -68,8 +68,8 @@ export class QuestionChoice {
 export class Student {
 	id: number = undefined;
 	crTime: string = undefined;
-	loginName: string = undefined;
-	userName: string = undefined;
+	user: User = new User();
+	name: string = undefined;
 	mobile: string = undefined;
 	password: string = undefined;
 	email: string = undefined;
@@ -133,6 +133,15 @@ export class TeamApply {
 	team: Team = undefined;
 	teamId: number = undefined;
 	status: string = undefined;
+}
+
+export class User {
+	id: number = undefined;
+	crTime: string = undefined;
+	username: string = undefined;
+	password: string = undefined;
+	role: string = undefined;
+	ty: string = undefined;
 }
 
 export class Video {

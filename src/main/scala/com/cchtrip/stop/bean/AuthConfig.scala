@@ -51,13 +51,6 @@ object AuthService {
   private var cache: Map[String, com.cchtrip.stop.entity.User] = Map()
 
   def regist(user: com.cchtrip.stop.entity.User): Unit = {
-    //    val grantedAuthorities = new util.ArrayList[GrantedAuthority]()
-    //    roles.filter(_ != null).foreach(r => {
-    //      if (r.nonEmpty) {
-    //        grantedAuthorities.add(new SimpleGrantedAuthority(r))
-    //      }
-    //    })
-    //    val user = new User(username, password, grantedAuthorities)
     cache += (user.username -> user)
   }
 

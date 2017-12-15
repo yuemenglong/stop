@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.teacher
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{AuthService, Dao}
 import com.cchtrip.stop.entity.Student
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -35,9 +35,15 @@ class StudentCtr {
 
   @DeleteMapping(Array("/{id}"))
   def deleteStudent(@PathVariable id: Long): String = dao.beginTransaction(session => {
+    val username = {
+      val root = Orm.root(classOf[Student])
+      session.first(Orm.select(root.leftJoin("user").get("username").as(classOf[String]))
+        .from(root).where(root.get("id").eql(id)))
+    }
     OrmTool.deleteById(classOf[Student], id, session, (root: Root[Student]) => {
       Array(root.leftJoin("user"))
     })
+    AuthService.drop(username)
     "{}"
   })
 
@@ -56,6 +62,7 @@ class StudentCtr {
     val ex = Orm.update(student)
     ex.update("user")
     session.execute(ex)
+    AuthService.regist(student.user)
     JSON.stringify(student)
   })
 
@@ -64,6 +71,7 @@ class StudentCtr {
                       @RequestParam(defaultValue = "0") offset: Long
                      ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Student])
+    root.select("user").ignore("password")
     val query = Orm.selectFrom(root).limit(limit).offset(offset)
     val res = session.query(query)
     JSON.stringify(res)

@@ -1,8 +1,7 @@
 package com.cchtrip.stop.controller.teacher
 
 import com.cchtrip.stop.bean.Dao
-import com.cchtrip.stop.entity.{Student, Team, TeamApply}
-import com.cchtrip.stop.util.NamedException
+import com.cchtrip.stop.entity.{Team, TeamApply}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -15,37 +14,11 @@ import org.springframework.web.bind.annotation._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @RestController
-@RequestMapping(value = Array("/teacher/team"), produces = Array("application/json"))
+@RequestMapping(value = Array("//team"), produces = Array("application/json"))
 class TeamCtr {
 
   @Autowired
   var dao: Dao = _
-
-  @PostMapping(Array(""))
-  def postTeam(@RequestBody body: String): String = dao.beginTransaction(session => {
-    val team = JSON.parse(body, classOf[Team])
-    team.crTime = new Date
-    if (team.createrId == null) {
-      throw new NamedException(NamedException.INVALID_PARAM, "没有创建者")
-    }
-    // 删掉原有的apply
-    {
-      val root = Orm.root(classOf[TeamApply])
-      val ex = Orm.deleteFrom(root).where(root.get("studentId").eql(team.createrId))
-      session.execute(ex)
-    }
-
-    val apply = Orm.empty(classOf[TeamApply])
-    apply.crTime = new Date
-    apply.studentId = team.createrId
-    apply.status = "succ"
-    team.students = Array(apply)
-    val ex = Orm.insert(team)
-    ex.insert("students")
-    session.execute(ex)
-
-    JSON.stringify(team)
-  })
 
   @DeleteMapping(Array("/{id}"))
   def deleteTeam(@PathVariable id: Long): String = dao.beginTransaction(session => {

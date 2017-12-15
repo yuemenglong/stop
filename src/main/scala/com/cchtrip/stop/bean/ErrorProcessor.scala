@@ -6,7 +6,7 @@ package com.cchtrip.stop.bean
 
 import javax.servlet.http.HttpServletRequest
 
-import com.cchtrip.stop.util.NamedException
+import com.cchtrip.stop.util.{Kit, NamedException}
 import io.github.yuemenglong.json.JSON
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes
@@ -26,12 +26,7 @@ class ErrorProcessor {
   @ResponseBody
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
   def handle(request: HttpServletRequest, e: Exception): String = {
-    if (!e.isInstanceOf[NamedException]) {
-      e.getMessage + "\n" +
-        logger.error(e.getStackTrace.map(ste => {
-          ste.toString
-        }).mkString("\n"))
-    }
+    Kit.logError(e)
     val name = e match {
       case ne: NamedException => ne.name
       case _ => e.getClass.getName

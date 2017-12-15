@@ -21,6 +21,32 @@ class UserTeamCtr {
   @Autowired
   var dao: Dao = _
 
+  // 创建Team
+  @PostMapping(Array(""))
+  def postTeam(@PathVariable uid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+    val team = JSON.parse(body, classOf[Team])
+    team.crTime = new Date
+    team.createrId = uid
+
+    // 删掉原有的apply
+    {
+      val root = Orm.root(classOf[TeamApply])
+      val ex = Orm.deleteFrom(root).where(root.get("studentId").eql(team.createrId))
+      session.execute(ex)
+    }
+
+    val apply = Orm.empty(classOf[TeamApply])
+    apply.crTime = new Date
+    apply.studentId = team.createrId
+    apply.status = "succ"
+    team.students = Array(apply)
+    val ex = Orm.insert(team)
+    ex.insert("students")
+    session.execute(ex)
+
+    JSON.stringify(team)
+  })
+
   // 加入Team
   @PutMapping(Array(""))
   def putTeam(@PathVariable uid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {

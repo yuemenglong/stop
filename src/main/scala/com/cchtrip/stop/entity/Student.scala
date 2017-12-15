@@ -23,7 +23,7 @@ class Student extends EntityBase {
   @Column(length = 32)
   var email: String = _
 
-  @Column(length = 64)
+  @Column(length = 80)
   var avatar: String = _
 
   @Pointer

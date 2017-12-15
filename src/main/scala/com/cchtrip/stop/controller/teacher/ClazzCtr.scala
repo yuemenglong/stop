@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @RestController
-@RequestMapping(value = Array("/clazz"), produces = Array("application/json"))
+@RequestMapping(value = Array("/teacher/clazz"), produces = Array("application/json"))
 class ClazzCtr {
 
   @Autowired
@@ -23,7 +23,6 @@ class ClazzCtr {
   def postClazz(@RequestBody body: String): String = dao.beginTransaction(session => {
     val clazz = JSON.parse(body, classOf[Clazz])
     clazz.crTime = new Date
-    clazz.studentCount = 0
     session.execute(Orm.insert(clazz))
     JSON.stringify(clazz)
   })
@@ -75,10 +74,6 @@ class ClazzCtr {
       val ex = Orm.update(root).set(root.get("clazzId").assign(id)).where(root.get("id").in(ids))
       session.execute(ex)
     }
-    {
-      val root = Orm.root(classOf[Clazz])
-      session.execute(Orm.update(root).set(root.get("studentCount").assignAdd(ids.length)))
-    }
     "[]"
   })
 
@@ -87,8 +82,13 @@ class ClazzCtr {
                     @RequestParam(defaultValue = "0") offset: Long
                    ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Clazz])
-    val query = Orm.selectFrom(root).limit(limit).offset(offset)
-    val res = session.query(query)
+    val query = Orm.select(root, root.count(root.leftJoin("students").get("id"))).from(root)
+      .groupBy("id")
+      .limit(limit).offset(offset)
+    val res = session.query(query).map { case (clazz, count) =>
+      clazz.studentCount = count.toInt
+      clazz
+    }
     JSON.stringify(res)
   })
 
@@ -103,10 +103,6 @@ class ClazzCtr {
   @DeleteMapping(Array("/{id}/student/{sid}"))
   def deleteClazzStudent(@PathVariable id: Long,
                          @PathVariable sid: Long): String = dao.beginTransaction(session => {
-    {
-      val root = Orm.root(classOf[Clazz])
-      session.execute(Orm.update(root).set(root.get("studentCount").assignSub(1)))
-    }
     OrmTool.updateById(classOf[Student], sid, session, ("clazzId", 0))
     "{}"
   })

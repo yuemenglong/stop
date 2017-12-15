@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @RestController
-@RequestMapping(value = Array("/student"), produces = Array("application/json"))
+@RequestMapping(value = Array("/teacher/student"), produces = Array("application/json"))
 class StudentCtr {
 
   @Autowired

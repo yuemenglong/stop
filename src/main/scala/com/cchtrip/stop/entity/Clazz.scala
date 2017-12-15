@@ -12,6 +12,7 @@ class Clazz extends EntityBase {
   @Column(length = 32)
   var name: String = _
 
+  @Ignore
   var studentCount: Integer = _
 
   @OneToMany

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @Controller
-@RequestMapping(value = Array("/course-category", "/question-category"), produces = Array("application/json"))
+@RequestMapping(value = Array("/teacher/course-category", "/teacher/question-category"), produces = Array("application/json"))
 @ResponseBody
 class CategoryCtr {
 

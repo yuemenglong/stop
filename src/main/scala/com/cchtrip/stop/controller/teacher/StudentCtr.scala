@@ -30,6 +30,7 @@ class StudentCtr {
     val ex = Orm.insert(student)
     ex.insert("user")
     session.execute(ex)
+    AuthService.regist(student.user)
     JSON.stringify(student)
   })
 

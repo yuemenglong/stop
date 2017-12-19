@@ -22,7 +22,7 @@ class CourseInfoCtr {
   @PostMapping(Array("/courseware"))
   def postCourseware(@PathVariable cid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val c = JSON.parse(body, classOf[Courseware])
-    c.courseId = cid
+    //    c.courseId = cid
     c.crTime = new Date()
     session.execute(Orm.insert(c))
     JSON.stringify(c)
@@ -47,7 +47,7 @@ class CourseInfoCtr {
   @PostMapping(Array("/video"))
   def postVideo(@PathVariable cid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val c = JSON.parse(body, classOf[Video])
-    c.courseId = cid
+    //    c.courseId = cid
     c.crTime = new Date()
     session.execute(Orm.insert(c))
     JSON.stringify(c)
@@ -73,7 +73,7 @@ class CourseInfoCtr {
   @PostMapping(Array("/question"))
   def postQuestion(@PathVariable cid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val q = JSON.parse(body, classOf[Question])
-    q.courseId = cid
+    //    q.courseId = cid
     q.crTime = new Date()
     val ex = Orm.insert(q)
     if (q.sc != null) {
@@ -98,7 +98,7 @@ class CourseInfoCtr {
                   @PathVariable qid: Long,
                   @RequestBody body: String): String = dao.beginTransaction(session => {
     val q = JSON.parse(body, classOf[Question])
-    q.courseId = cid
+    //    q.courseId = cid
     q.id = qid
     val ex = Orm.update(q)
     ex.update("sc")

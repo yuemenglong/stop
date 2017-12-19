@@ -20,13 +20,48 @@ class Course extends EntityBase {
   var category: Category = _
 
   @OneToMany
-  var questions: Array[Question] = Array()
+  var coursewares: Array[CourseCourseware] = Array()
   @OneToMany
-  var coursewares: Array[Courseware] = Array()
+  var videos: Array[CourseVideo] = Array()
   @OneToMany
-  var videos: Array[Video] = Array()
+  var questions: Array[CourseQuestion] = Array()
 
   var questionCount: Integer = _
   var coursewareCount: Integer = _
   var videoCount: Integer = _
+}
+
+@Entity
+class CourseCourseware extends EntityBase {
+  var courseId: Long = _
+  @Pointer
+  var course: Course = _
+
+  var coursewareId: Long = _
+  @Pointer
+  var courseware: Course = _
+
+
+}
+
+@Entity
+class CourseVideo extends EntityBase {
+  var courseId: Long = _
+  @Pointer
+  var course: Course = _
+
+  var videoId: Long = _
+  @Pointer
+  var video: Video = _
+}
+
+@Entity
+class CourseQuestion extends EntityBase {
+  var courseId: Long = _
+  @Pointer
+  var course: Course = _
+
+  var questionId: Long = _
+  @Pointer
+  var question: Question = _
 }

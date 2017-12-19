@@ -15,7 +15,7 @@ class Category extends EntityBase {
 
   var parentId: Long = _
 
-  @Enum(Array("course", "question"))
+  @Enum(Array("course", "courseware", "video", "question"))
   @Column(nullable = false)
   var ty: String = _
 

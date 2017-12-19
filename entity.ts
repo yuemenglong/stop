@@ -25,35 +25,63 @@ export class Course {
 	difficulty: string = undefined;
 	categoryId: number = undefined;
 	category: Category = new Category();
-	questions: Question[] = [];
-	coursewares: Courseware[] = [];
-	videos: Video[] = [];
+	coursewares: CourseCourseware[] = [];
+	videos: CourseVideo[] = [];
+	questions: CourseQuestion[] = [];
 	questionCount: number = undefined;
 	coursewareCount: number = undefined;
 	videoCount: number = undefined;
+}
+
+export class CourseCourseware {
+	id: number = undefined;
+	crTime: string = undefined;
+	courseId: number = undefined;
+	course: Course = new Course();
+	coursewareId: number = undefined;
+	courseware: Course = new Course();
+}
+
+export class CourseQuestion {
+	id: number = undefined;
+	crTime: string = undefined;
+	courseId: number = undefined;
+	course: Course = new Course();
+	questionId: number = undefined;
+	question: Question = new Question();
+}
+
+export class CourseVideo {
+	id: number = undefined;
+	crTime: string = undefined;
+	courseId: number = undefined;
+	course: Course = new Course();
+	videoId: number = undefined;
+	video: Video = new Video();
 }
 
 export class Courseware {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
-	courseId: number = undefined;
 	fileId: string = undefined;
 	fileName: string = undefined;
 	size: number = undefined;
 	ext: string = undefined;
+	categoryId: number = undefined;
+	category: Category = new Category();
 }
 
 export class Question {
 	id: number = undefined;
 	crTime: string = undefined;
-	courseId: number = undefined;
 	title: string = undefined;
 	score: number = undefined;
 	answer: string = undefined;
 	ty: string = undefined;
 	sc: QuestionChoice = new QuestionChoice();
 	categoryId: number = undefined;
+	category: Category = new Category();
 }
 
 export class QuestionChoice {
@@ -148,9 +176,10 @@ export class Video {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
-	courseId: number = undefined;
 	fileId: string = undefined;
 	fileName: string = undefined;
 	size: number = undefined;
 	ext: string = undefined;
+	categoryId: number = undefined;
+	category: Category = new Category();
 }

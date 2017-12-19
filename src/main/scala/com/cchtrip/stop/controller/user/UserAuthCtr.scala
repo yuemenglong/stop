@@ -50,18 +50,18 @@ class UserAuthCtr {
       val student = session.first(Orm.selectFrom(root).where(root.join("user").get("username").eql(user.username)
         .and(root.join("user").get("password").eql(user.password))))
       if (student == null) {
-        throw NamedException(NamedException.LOGIN_FAIL, "登录失败,用户名或密码不正确")
+        throw NamedException(NamedException.AUTH_FAIL, "登录失败,用户名或密码不正确")
       }
       //      student.password = null
       auth.isAuthenticated match {
         case true => JSON.stringify(student)
-        case false => throw NamedException(NamedException.LOGIN_FAIL, "登录失败")
+        case false => throw NamedException(NamedException.AUTH_FAIL, "登录失败")
       }
     } catch {
       case ne: NamedException => throw ne
       case e: Throwable =>
         Kit.logError(e)
-        throw NamedException(NamedException.LOGIN_FAIL, "登录失败")
+        throw NamedException(NamedException.AUTH_FAIL, "登录失败")
     }
   })
 

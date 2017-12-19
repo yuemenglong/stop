@@ -1,6 +1,6 @@
 package com.cchtrip.stop.entity
 
-import io.github.yuemenglong.orm.lang.anno.{Column, Entity}
+import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Pointer}
 import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
@@ -12,8 +12,6 @@ class Video extends EntityBase {
   @Column(length = 64)
   var name: String = _
 
-  var courseId: Long = _
-
   @Column(length = 80, nullable = false)
   var fileId: String = _
 
@@ -24,4 +22,8 @@ class Video extends EntityBase {
 
   @Column(length = 16)
   var ext: String = _
+
+  var categoryId: Long = _
+  @Pointer
+  var category: Category = _
 }

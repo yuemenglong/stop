@@ -1,7 +1,7 @@
-package com.cchtrip.stop.controller.teacher
+package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.Dao
-import com.cchtrip.stop.entity.{Category, Course, Question}
+import com.cchtrip.stop.entity._
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -15,7 +15,12 @@ import org.springframework.web.bind.annotation._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @Controller
-@RequestMapping(value = Array("/teacher/course-category", "/teacher/question-category"), produces = Array("application/json"))
+@RequestMapping(value = Array(
+  "/admin/course-category",
+  "/admin/question-category",
+  "/admin/courseware-category",
+  "/admin/video-category",
+), produces = Array("application/json"))
 @ResponseBody
 class CategoryCtr {
 
@@ -79,17 +84,27 @@ class CategoryCtr {
         throw NamedException(NamedException.DEL_CATE_FAIL, "子类型不为空")
       }
     }
+
+    def relationCountFn = (clazz: Class[_]) => {
+      val root = Orm.root(clazz)
+      session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
+    }
+
     cate.ty match {
       case "course" =>
-        val root = Orm.root(classOf[Course])
-        val count = session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
-        if (count > 0) {
+        if (relationCountFn(classOf[Course]) > 0) {
           throw NamedException(NamedException.DEL_CATE_FAIL, "还有课程相关联")
         }
+      case "courseware" =>
+        if (relationCountFn(classOf[Courseware]) > 0) {
+          throw NamedException(NamedException.DEL_CATE_FAIL, "还有课件相关联")
+        }
+      case "video" =>
+        if (relationCountFn(classOf[Video]) > 0) {
+          throw NamedException(NamedException.DEL_CATE_FAIL, "还有视频相关联")
+        }
       case "question" =>
-        val root = Orm.root(classOf[Question])
-        val count = session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
-        if (count > 0) {
+        if (relationCountFn(classOf[Question]) > 0) {
           throw NamedException(NamedException.DEL_CATE_FAIL, "还有题目相关联")
         }
     }

@@ -40,10 +40,10 @@ class TeacherAuthCtr {
 
       auth.isAuthenticated match {
         case true => "{}"
-        case false => throw NamedException(NamedException.LOGIN_FAIL, "登录失败")
+        case false => throw NamedException(NamedException.AUTH_FAIL, "登录失败")
       }
     } catch {
-      case _: Throwable => throw NamedException(NamedException.LOGIN_FAIL, "登录失败")
+      case _: Throwable => throw NamedException(NamedException.AUTH_FAIL, "登录失败")
     }
   })
 

@@ -8,18 +8,12 @@ import io.github.yuemenglong.orm.lang.types.Types._
   */
 @Entity
 class Question extends EntityBase {
-
-  var courseId: Long = _
-
   @Column(nullable = false)
   var title: String = _
-
   @Column(nullable = false)
   var score: Double = _
-
   @Column(length = 64)
   var answer: String = _
-
   @Column(length = 8, nullable = false)
   var ty: String = _
 
@@ -27,4 +21,6 @@ class Question extends EntityBase {
   var sc: QuestionChoice = _
 
   var categoryId: Long = _
+  @Pointer
+  var category: Category = _
 }

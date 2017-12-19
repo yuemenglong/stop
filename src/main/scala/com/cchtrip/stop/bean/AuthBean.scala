@@ -7,25 +7,37 @@ package com.cchtrip.stop.bean
 import java.util
 
 import com.cchtrip.stop.entity.Student
+import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.orm.Orm
+import io.github.yuemenglong.orm.lang.types.Types.String
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.{AuthenticationManager, UsernamePasswordAuthenticationToken}
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration._
-import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.{Authentication, GrantedAuthority}
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.{User, UserDetails, UserDetailsService, UsernameNotFoundException}
+import org.springframework.security.web.authentication.WebAuthenticationDetails
+import org.springframework.stereotype.Component
+
+class LoginUser {
+  var username: String = _
+  var password: String = _
+}
 
 @EnableWebSecurity
 class AuthConfig extends WebSecurityConfigurerAdapter {
-
   @Autowired
   var dao: Dao = _
 
   @Autowired
   def configureGlobal(auth: AuthenticationManagerBuilder): Unit = {
-    //    auth.inMemoryAuthentication
-    //      .withUser("admin").password("admin").roles("ADMIN")
+    auth.inMemoryAuthentication
+      .withUser("admin").password("admin").roles("ADMIN")
+    auth.inMemoryAuthentication
+      .withUser("teacher").password("teacher").roles("TEACHER")
     auth.userDetailsService(new AuthService())
     dao.beginTransaction(session => {
       val root = Orm.root(classOf[com.cchtrip.stop.entity.User])
@@ -40,6 +52,9 @@ class AuthConfig extends WebSecurityConfigurerAdapter {
       .antMatchers("/user/logout").permitAll()
       .antMatchers("/teacher/login").permitAll()
       .antMatchers("/teacher/logout").permitAll()
+      .antMatchers("/admin/login").permitAll()
+      .antMatchers("/admin/logout").permitAll()
+      .antMatchers("/admin/**").hasRole("ADMIN")
       .antMatchers("/user/**").authenticated()
       .antMatchers("/**").permitAll()
       .anyRequest().authenticated()
@@ -72,3 +87,25 @@ class AuthService extends UserDetailsService {
     }
   }
 }
+
+@Component
+class AuthBean {
+  @Autowired protected var authMgr: AuthenticationManager = _
+
+  def auth(user: LoginUser): Authentication = {
+    try {
+      val grantedAuthorities = new util.ArrayList[GrantedAuthority]()
+      //    grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"))
+      val token = new UsernamePasswordAuthenticationToken(user.username, user.password, grantedAuthorities)
+      //    token.setDetails(new WebAuthenticationDetails(request))
+
+      val auth = authMgr.authenticate(token)
+      val context = SecurityContextHolder.getContext
+      context.setAuthentication(auth)
+      auth
+    } catch {
+      case _: Throwable => throw new NamedException(NamedException.AUTH_FAIL, "认证失败")
+    }
+  }
+}
+

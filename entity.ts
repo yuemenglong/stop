@@ -82,8 +82,10 @@ export class Question {
 	answer: string = undefined;
 	ty: string = undefined;
 	sc: QuestionChoice = new QuestionChoice();
-	categoryId: number = undefined;
-	category: Category = new Category();
+	cate0Id: number = undefined;
+	cate0: Category = new Category();
+	cate1Id: number = undefined;
+	cate1: Category = new Category();
 }
 
 export class QuestionChoice {
@@ -182,6 +184,8 @@ export class Video {
 	fileName: string = undefined;
 	size: number = undefined;
 	ext: string = undefined;
-	categoryId: number = undefined;
-	category: Category = new Category();
+	cate0Id: number = undefined;
+	cate0: Category = new Category();
+	cate1Id: number = undefined;
+	cate1: Category = new Category();
 }

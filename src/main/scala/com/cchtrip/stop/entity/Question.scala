@@ -20,7 +20,11 @@ class Question extends EntityBase {
   @OneToOne(right = "qtId")
   var sc: QuestionChoice = _
 
-  var categoryId: Long = _
+  var cate0Id: Long = _
   @Pointer
-  var category: Category = _
+  var cate0: Category = _
+
+  var cate1Id: Long = _
+  @Pointer
+  var cate1: Category = _
 }

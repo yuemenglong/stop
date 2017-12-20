@@ -50,7 +50,7 @@ class CoursewareCtr {
 
   @GetMapping(Array("/count"))
   def count(): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Student])
+    val root = Orm.root(classOf[Courseware])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
     JSON.stringify(res)

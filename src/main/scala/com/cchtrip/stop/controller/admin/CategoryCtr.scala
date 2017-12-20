@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation._
   */
 @Controller
 @RequestMapping(value = Array(
+  "/admin/category",
   "/admin/course-category",
   "/admin/question-category",
   "/admin/courseware-category",

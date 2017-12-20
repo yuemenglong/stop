@@ -68,8 +68,10 @@ export class Courseware {
 	fileName: string = undefined;
 	size: number = undefined;
 	ext: string = undefined;
-	categoryId: number = undefined;
-	category: Category = new Category();
+	cate0Id: number = undefined;
+	cate0: Category = new Category();
+	cate1Id: number = undefined;
+	cate1: Category = new Category();
 }
 
 export class Question {

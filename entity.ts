@@ -23,14 +23,16 @@ export class Course {
 	name: string = undefined;
 	description: string = undefined;
 	difficulty: string = undefined;
-	categoryId: number = undefined;
-	category: Category = new Category();
 	coursewares: CourseCourseware[] = [];
 	videos: CourseVideo[] = [];
 	questions: CourseQuestion[] = [];
 	questionCount: number = undefined;
 	coursewareCount: number = undefined;
 	videoCount: number = undefined;
+	cate0Id: number = undefined;
+	cate0: Category = new Category();
+	cate1Id: number = undefined;
+	cate1: Category = new Category();
 }
 
 export class CourseCourseware {
@@ -39,7 +41,7 @@ export class CourseCourseware {
 	courseId: number = undefined;
 	course: Course = new Course();
 	coursewareId: number = undefined;
-	courseware: Course = new Course();
+	courseware: Courseware = new Courseware();
 }
 
 export class CourseQuestion {

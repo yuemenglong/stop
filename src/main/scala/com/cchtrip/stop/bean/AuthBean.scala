@@ -11,6 +11,7 @@ import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types.String
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.{AuthenticationManager, UsernamePasswordAuthenticationToken}
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -54,6 +55,10 @@ class AuthConfig extends WebSecurityConfigurerAdapter {
       .antMatchers("/teacher/logout").permitAll()
       .antMatchers("/admin/login").permitAll()
       .antMatchers("/admin/logout").permitAll()
+      .antMatchers(HttpMethod.GET, "/admin/category").permitAll()
+      .antMatchers(HttpMethod.GET, "/admin/courseware/**").permitAll()
+      .antMatchers(HttpMethod.GET, "/admin/video/**").permitAll()
+      .antMatchers(HttpMethod.GET, "/admin/question/**").permitAll()
       .antMatchers("/admin/**").hasRole("ADMIN")
       .antMatchers("/user/**").authenticated()
       .antMatchers("/**").permitAll()

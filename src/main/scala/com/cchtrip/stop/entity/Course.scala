@@ -15,10 +15,6 @@ class Course extends EntityBase {
 
   var difficulty: String = _
 
-  var categoryId: Long = _
-  @Pointer
-  var category: Category = _
-
   @OneToMany
   var coursewares: Array[CourseCourseware] = Array()
   @OneToMany
@@ -29,6 +25,14 @@ class Course extends EntityBase {
   var questionCount: Integer = _
   var coursewareCount: Integer = _
   var videoCount: Integer = _
+
+  var cate0Id: Long = _
+  @Pointer
+  var cate0: Category = _
+
+  var cate1Id: Long = _
+  @Pointer
+  var cate1: Category = _
 }
 
 @Entity
@@ -39,7 +43,7 @@ class CourseCourseware extends EntityBase {
 
   var coursewareId: Long = _
   @Pointer
-  var courseware: Course = _
+  var courseware: Courseware = _
 
 
 }

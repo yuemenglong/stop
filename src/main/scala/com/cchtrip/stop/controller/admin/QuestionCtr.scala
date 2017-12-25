@@ -26,6 +26,9 @@ class QuestionCtr {
   def post(@RequestBody body: String): String = dao.beginTransaction(session => {
     val obj = JSON.parse(body, classOf[Question])
     obj.crTime = new Date
+    if (obj.sc != null) {
+      obj.sc.crTime = new Date
+    }
     val ex = Orm.insert(obj)
     ex.insert("sc")
     session.execute(ex)

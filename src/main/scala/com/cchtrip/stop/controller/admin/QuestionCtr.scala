@@ -47,11 +47,20 @@ class QuestionCtr {
 
   @GetMapping(Array("/list"))
   def list(@RequestParam(defaultValue = "20") limit: Long,
-           @RequestParam(defaultValue = "0") offset: Long
+           @RequestParam(defaultValue = "0") offset: Long,
+           cate0Id: Long,
+           cate1Id: Long,
           ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
-    val query = Orm.selectFrom(root).limit(limit).offset(offset)
+    var cond = Orm.cond()
+    if (cate0Id != null) {
+      cond = cond.and(root.get("cate0Id").eql(cate0Id))
+    }
+    if (cate1Id != null) {
+      cond = cond.and(root.get("cate1Id").eql(cate1Id))
+    }
+    val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
     JSON.stringify(res)
   })
@@ -61,6 +70,16 @@ class QuestionCtr {
     val root = Orm.root(classOf[Question])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
+    JSON.stringify(res)
+  })
+
+  @GetMapping(Array("/cate-count"))
+  def countByCate(): String = dao.beginTransaction(session => {
+    // 默认二级
+    val root = Orm.root(classOf[Question])
+    val query = Orm.select(root.get("cate1Id").as(classOf[Long]), root.count("id"))
+      .from(root).where(root.get("cate1Id").notNull()).groupBy("cate1Id")
+    val res = session.query(query).map(p => (p._1.toString, p._2)).toMap
     JSON.stringify(res)
   })
 

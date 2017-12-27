@@ -99,6 +99,50 @@ export class QuestionChoice {
 	d: string = undefined;
 }
 
+export class Quiz {
+	id: number = undefined;
+	crTime: string = undefined;
+	name: string = undefined;
+	limitDate: string = undefined;
+	questions: QuizQuestion[] = [];
+	clazz: Clazz = new Clazz();
+	clazzId: number = undefined;
+	jobs: QuizJob[] = [];
+}
+
+export class QuizJob {
+	id: number = undefined;
+	crTime: string = undefined;
+	quiz: Quiz = new Quiz();
+	quizId: number = undefined;
+	student: Student = new Student();
+	studentId: number = undefined;
+	status: string = undefined;
+	score: number = undefined;
+	items: QuizJobItem[] = [];
+}
+
+export class QuizJobItem {
+	id: number = undefined;
+	crTime: string = undefined;
+	jobId: number = undefined;
+	answer: string = undefined;
+	score: number = undefined;
+	correct: boolean = undefined;
+	status: string = undefined;
+	question: Question = new Question();
+	questionId: number = undefined;
+}
+
+export class QuizQuestion {
+	id: number = undefined;
+	crTime: string = undefined;
+	quiz: Quiz = new Quiz();
+	quizId: number = undefined;
+	question: Question = new Question();
+	questionId: number = undefined;
+}
+
 export class Student {
 	id: number = undefined;
 	crTime: string = undefined;

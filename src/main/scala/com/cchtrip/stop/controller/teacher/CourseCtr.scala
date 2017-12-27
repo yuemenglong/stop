@@ -33,7 +33,26 @@ class CourseCtr {
     }
     val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    val ids = res.map(_.id)
+
+    def countFn(clazz: Class[_]): Map[Long, Long] = {
+      val root = Orm.root(clazz)
+      session.query(Orm.select(root.get("courseId").as(classOf[Long]),
+        root.count("courseId"))
+        .from(root).where(root.get("courseId").in(ids))
+        .groupBy("courseId")).toMap
+    }
+
+    val cmap = countFn(classOf[CourseCourseware])
+    val vmap = countFn(classOf[CourseVideo])
+    val qmap = countFn(classOf[CourseQuestion])
+
+    JSON.stringify(res.map(c => {
+      c.coursewareCount = cmap(c.id)
+      c.videoCount = vmap(c.id)
+      c.questionCount = qmap(c.id)
+      c
+    }))
   })
 
   @GetMapping(Array("/count"))

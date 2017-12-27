@@ -2,7 +2,7 @@ package com.cchtrip.stop.controller.teacher
 
 import javax.servlet.http.HttpServletRequest
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, LoginUser}
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation._
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
-private class LoginUser {
-  var username: String = _
-  var password: String = _
-}
 
 @RestController
 @RequestMapping(value = Array("/teacher"), produces = Array("application/json"))

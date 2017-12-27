@@ -31,9 +31,9 @@ class StudyJobCtr {
     // 1. 快照Course下的coursewares, videos, questions
     def getItemIds[T](clazz: Class[T], ty: String) = {
       val root = Orm.root(clazz)
-      root.fields()
+      session.query(Orm.selectFrom(root).where(root.get("courseId").eql(job.courseId))).foreach(println)
       val ids = session.query(Orm.selectFrom(root).where(root.get("courseId").eql(job.courseId)))
-        .map(_.asInstanceOf[Entity].$$core().fieldMap("id").asInstanceOf[Long])
+        .map(_.asInstanceOf[Entity].$$core().fieldMap(s"${ty}Id").asInstanceOf[Long])
       ids.map(id => {
         val rel = new StudentStudyJobItem
         rel.crTime = new Date
@@ -44,9 +44,9 @@ class StudyJobCtr {
       })
     }
 
-    val snapJobItems = getItemIds(classOf[Courseware], "courseware") ++
-      getItemIds(classOf[Video], "video") ++
-      getItemIds(classOf[Question], "question")
+    val snapJobItems = getItemIds(classOf[CourseCourseware], "courseware") ++
+      getItemIds(classOf[CourseVideo], "video") ++
+      getItemIds(classOf[CourseQuestion], "question")
 
     // 2.每个学生一份
     val studentIds = {

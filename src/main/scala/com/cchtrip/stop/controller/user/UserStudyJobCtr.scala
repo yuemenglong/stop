@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation._
   */
 @RestController
 @RequestMapping(value = Array("/user/{uid}/study-job"), produces = Array("application/json"))
-class UserJobCtr {
+class UserStudyJobCtr {
 
   @Autowired
   var dao: Dao = _

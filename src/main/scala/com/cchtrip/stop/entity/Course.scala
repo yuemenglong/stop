@@ -22,9 +22,12 @@ class Course extends EntityBase {
   @OneToMany
   var questions: Array[CourseQuestion] = Array()
 
-  var questionCount: Integer = _
-  var coursewareCount: Integer = _
-  var videoCount: Integer = _
+  @Ignore
+  var questionCount: Long = _
+  @Ignore
+  var coursewareCount: Long = _
+  @Ignore
+  var videoCount: Long = _
 
   var cate0Id: Long = _
   @Pointer

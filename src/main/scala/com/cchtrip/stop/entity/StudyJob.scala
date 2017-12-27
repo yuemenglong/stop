@@ -45,6 +45,7 @@ class StudentStudyJob extends EntityBase {
 class StudentStudyJobItem extends EntityBase {
   var studentStudyJobId: Long = _
   var targetId: Long = _
+  @Enum(Array("courseware", "video", "question"))
   var ty: String = _ // 可能为courseware,video,question
   @Enum(Array("waiting", "succ"))
   var status: String = _

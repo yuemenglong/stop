@@ -120,6 +120,8 @@ export class QuizJob {
 	status: string = undefined;
 	score: number = undefined;
 	items: QuizJobItem[] = [];
+	itemCount: number = undefined;
+	finishCount: number = undefined;
 }
 
 export class QuizJobItem {

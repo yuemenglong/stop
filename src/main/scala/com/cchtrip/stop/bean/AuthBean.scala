@@ -87,6 +87,7 @@ class AuthService extends UserDetailsService {
       case true =>
         val user = cache(username)
         val grantedAuthorities = new util.ArrayList[GrantedAuthority]()
+        grantedAuthorities.add(new SimpleGrantedAuthority(user.role))
         new User(user.username, user.password, grantedAuthorities)
       case false => throw new UsernameNotFoundException("用户名不存在")
     }
@@ -97,18 +98,36 @@ class AuthService extends UserDetailsService {
 class AuthBean {
   @Autowired protected var authMgr: AuthenticationManager = _
 
-  def auth(user: LoginUser): Authentication = {
+  def auth(user: LoginUser, role: String = null): Authentication = {
     try {
-      val grantedAuthorities = new util.ArrayList[GrantedAuthority]()
+      //      val grantedAuthorities = new util.ArrayList[GrantedAuthority]()
+      //      if (role != null) {
+      //        grantedAuthorities.add(new SimpleGrantedAuthority(role))
+      //      }
       //    grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"))
-      val token = new UsernamePasswordAuthenticationToken(user.username, user.password, grantedAuthorities)
+      //      val token = new UsernamePasswordAuthenticationToken(user.username, user.password, grantedAuthorities)
       //    token.setDetails(new WebAuthenticationDetails(request))
+      val token = new UsernamePasswordAuthenticationToken(user.username, user.password)
 
       val auth = authMgr.authenticate(token)
+      var find = false
+      role match {
+        case null => find = true
+        case _ => auth.getAuthorities.forEach(a => {
+          if (a.getAuthority == role) {
+            find = true
+          }
+        })
+      }
+      if (!find) {
+        throw new NamedException(NamedException.AUTH_FAIL, "角色认证失败")
+      }
+
       val context = SecurityContextHolder.getContext
       context.setAuthentication(auth)
       auth
     } catch {
+      case ne: NamedException => throw ne
       case _: Throwable => throw new NamedException(NamedException.AUTH_FAIL, "认证失败")
     }
   }

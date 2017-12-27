@@ -35,6 +35,25 @@ class UserQuizJobCtr {
     val query = Orm.selectFrom(root).where(root.get("studentId").eql(uid)
       .and(cond)).limit(limit).offset(offset)
     val res = session.query(query)
+    val ids = res.map(_.id)
+    val itemCountMap = {
+      val root = Orm.root(classOf[QuizJobItem])
+      session.query(Orm.select(root.get("jobId").as(classOf[Long]),
+        root.count("id")).from(root)
+        .where(root.get("jobId").in(ids))
+        .groupBy("jobId")).toMap
+    }
+    val finishCountMap = {
+      val root = Orm.root(classOf[QuizJobItem])
+      session.query(Orm.select(root.get("jobId").as(classOf[Long]),
+        root.count("id")).from(root)
+        .where(root.get("jobId").in(ids).and(root.get("status").eql("succ")))
+        .groupBy("jobId")).toMap
+    }
+    res.foreach(o => {
+      o.itemCount = itemCountMap(o.id)
+      o.finishCount = finishCountMap(o.id)
+    })
     JSON.stringify(res)
   })
 

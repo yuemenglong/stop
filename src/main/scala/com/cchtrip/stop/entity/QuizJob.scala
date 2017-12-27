@@ -1,6 +1,6 @@
 package com.cchtrip.stop.entity
 
-import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Enum, OneToMany, Pointer}
+import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Enum, Ignore, OneToMany, Pointer}
 import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
@@ -50,6 +50,11 @@ class QuizJob extends EntityBase {
 
   @OneToMany(right = "jobId")
   var items: Array[QuizJobItem] = Array()
+
+  @Ignore
+  var itemCount: Long = _
+  @Ignore
+  var finishCount: Long = _
 }
 
 @Entity

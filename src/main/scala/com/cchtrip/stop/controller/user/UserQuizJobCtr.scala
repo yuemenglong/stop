@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.user
 
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
+import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.Session.Session
@@ -40,8 +41,13 @@ class UserQuizJobCtr {
       val root = Orm.root(classOf[QuizJobItem])
       session.query(Orm.select(root.get("jobId").as(classOf[Long]),
         root.count("id")).from(root)
-        .where(root.get("jobId").in(ids))
-        .groupBy("jobId")).toMap
+        .where(root.get("jobId").in(ids))).toMap
+    }
+    val scoreMap = {
+      val root = Orm.root(classOf[QuizJobItem])
+      session.query(Orm.select(root.get("jobId").as(classOf[Long]),
+        root.sum(root.leftJoin("question").get("score"))).from(root)
+        .where(root.get("jobId").in(ids))).toMap
     }
     val finishCountMap = {
       val root = Orm.root(classOf[QuizJobItem])
@@ -53,6 +59,7 @@ class UserQuizJobCtr {
     res.foreach(o => {
       o.itemCount = itemCountMap(o.id)
       o.finishCount = finishCountMap(o.id)
+      o.totalScore = scoreMap(o.id)
     })
     JSON.stringify(res)
   })
@@ -132,19 +139,27 @@ class UserQuizJobCtr {
   def submitQuiz(@PathVariable jid: Long,
                  @RequestBody body: String
                 ): String = dao.beginTransaction(session => {
-    val items = {
-      val root = Orm.root(classOf[QuizJobItem])
-      session.query(Orm.selectFrom(root).where(root.get("jobId").eql(jid)))
-    }
+    {
+      val root = Orm.root(classOf[QuizJob])
+      session.first(Orm.select(root.get("status").as(classOf[String]))
+        .from(root).where(root.get("id").eql(jid)))
+    } match {
+      case "succ" => throw new NamedException(NamedException.INVALID_PARAM, "已经提交过试卷")
+      case _ =>
+        val items = {
+          val root = Orm.root(classOf[QuizJobItem])
+          session.query(Orm.selectFrom(root).where(root.get("jobId").eql(jid)))
+        }
 
-    val score = items.filter(_.score != null).map(_.score.doubleValue()).sum
-    val job = Orm.empty(classOf[QuizJob])
-    job.id = jid
-    job.status = "succ"
-    job.score = score
-    session.execute(Orm.update(job))
-    job.items = items
-    JSON.stringify(job)
+        val score = items.filter(_.score != null).map(_.score.doubleValue()).sum
+        val job = Orm.empty(classOf[QuizJob])
+        job.id = jid
+        job.status = "succ"
+        job.score = score
+        session.execute(Orm.update(job))
+        job.items = items
+        JSON.stringify(job)
+    }
   })
 
 }

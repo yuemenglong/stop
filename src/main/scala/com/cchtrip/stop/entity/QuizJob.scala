@@ -1,5 +1,6 @@
 package com.cchtrip.stop.entity
 
+import io.github.yuemenglong.json.lang.JsonDate
 import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Enum, Ignore, OneToMany, Pointer}
 import io.github.yuemenglong.orm.lang.types.Types._
 
@@ -10,6 +11,7 @@ import io.github.yuemenglong.orm.lang.types.Types._
 class Quiz extends EntityBase {
   @Column(length = 32)
   var name: String = _
+  @JsonDate
   var limitDate: Date = _
 
   @OneToMany
@@ -55,6 +57,8 @@ class QuizJob extends EntityBase {
   var itemCount: Long = _
   @Ignore
   var finishCount: Long = _
+  @Ignore
+  var totalScore: Double = _
 }
 
 @Entity

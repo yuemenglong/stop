@@ -92,6 +92,15 @@ class QuizCtr {
     JSON.stringify(res)
   })
 
+  @GetMapping(Array("/{id}"))
+  def getQuiz(@PathVariable id: Long): String = dao.beginTransaction(session => {
+    val root = Orm.root(classOf[Quiz])
+    root.select("questions").select("question")
+    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
+    val res = session.first(query)
+    JSON.stringify(res)
+  })
+
   @GetMapping(Array("/{id}/questions"))
   def getQuizQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[QuizQuestion])
@@ -104,6 +113,7 @@ class QuizCtr {
   @GetMapping(Array("/{id}/jobs"))
   def getQuizJobs(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[QuizJob])
+    root.select("student")
     val query = Orm.selectFrom(root).where(root.get("quizId").eql(id))
     val res = session.query(query)
     JSON.stringify(res)

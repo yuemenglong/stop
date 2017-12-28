@@ -88,7 +88,7 @@ class CategoryCtr {
 
     def relationCountFn = (clazz: Class[_]) => {
       val root = Orm.root(clazz)
-      session.first(Orm.select(root.count()).from(root).where(root.get("categoryId").eql(id)))
+      session.first(Orm.select(root.count()).from(root).where(root.get("cate0Id").eql(id).or(root.get("cate1Id").eql(id))))
     }
 
     cate.ty match {

@@ -107,6 +107,7 @@ export class Quiz {
 	questions: QuizQuestion[] = [];
 	clazz: Clazz = new Clazz();
 	clazzId: number = undefined;
+	status: string = undefined;
 	jobs: QuizJob[] = [];
 }
 

@@ -139,11 +139,8 @@ class UserQuizJobCtr {
   def submitQuiz(@PathVariable jid: Long,
                  @RequestBody body: String
                 ): String = dao.beginTransaction(session => {
-    {
-      val root = Orm.root(classOf[QuizJob])
-      session.first(Orm.select(root.get("status").as(classOf[String]))
-        .from(root).where(root.get("id").eql(jid)))
-    } match {
+    val job = OrmTool.selectById(classOf[QuizJob], jid, session)
+    job.status match {
       case "succ" => throw new NamedException(NamedException.INVALID_PARAM, "已经提交过试卷")
       case _ =>
         val items = {
@@ -152,14 +149,28 @@ class UserQuizJobCtr {
         }
 
         val score = items.filter(_.score != null).map(_.score.doubleValue()).sum
-        val job = Orm.empty(classOf[QuizJob])
-        job.id = jid
-        job.status = "succ"
-        job.score = score
-        session.execute(Orm.update(job))
-        job.items = items
-        JSON.stringify(job)
+        val jobRet = Orm.empty(classOf[QuizJob])
+        jobRet.id = jid
+        jobRet.status = "succ"
+        jobRet.score = score
+        session.execute(Orm.update(jobRet))
+        jobRet.items = items
+        val ret = JSON.stringify(jobRet)
+
+        // 测试整个quiz是否完成
+        val _ = {
+          val root = Orm.root(classOf[QuizJob])
+          val notSucc = session.first(Orm.select(root.count).from(root).where(root.get("quizId").eql(job.quizId)
+            .and(root.get("status").eql("waiting"))))
+          if (notSucc == 0) {
+            val root = Orm.root(classOf[Quiz])
+            session.execute(Orm.update(root).set(root.get("status").assign("succ")).where(root.get("id").eql(job.quizId)))
+          }
+        }
+
+        ret
     }
-  })
+  }
+  )
 
 }

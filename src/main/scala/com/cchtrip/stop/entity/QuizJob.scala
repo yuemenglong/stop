@@ -21,6 +21,9 @@ class Quiz extends EntityBase {
   var clazz: Clazz = _
   var clazzId: Long = _
 
+  @Enum(Array("waiting", "succ"))
+  var status: String = _
+
   @OneToMany
   var jobs: Array[QuizJob] = Array()
 }

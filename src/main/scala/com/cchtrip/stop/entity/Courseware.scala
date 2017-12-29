@@ -14,6 +14,8 @@ class Courseware extends EntityBase {
   var fileId: String = _
   @Column(length = 64)
   var fileName: String = _
+  @Column(length = 64)
+  var swfName: String = _
   var size: Integer = _
   @Column(length = 16)
   var ext: String = _

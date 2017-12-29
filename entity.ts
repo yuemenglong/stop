@@ -68,6 +68,7 @@ export class Courseware {
 	name: string = undefined;
 	fileId: string = undefined;
 	fileName: string = undefined;
+	swfName: string = undefined;
 	size: number = undefined;
 	ext: string = undefined;
 	cate0Id: number = undefined;
@@ -153,7 +154,6 @@ export class Student {
 	user: User = new User();
 	name: string = undefined;
 	mobile: string = undefined;
-	password: string = undefined;
 	email: string = undefined;
 	avatar: string = undefined;
 	clazz: Clazz = new Clazz();

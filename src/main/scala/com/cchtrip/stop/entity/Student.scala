@@ -19,9 +19,6 @@ class Student extends EntityBase {
   var mobile: String = _
 
   @Column(length = 32)
-  var password: String = _
-
-  @Column(length = 32)
   var email: String = _
 
   @Column(length = 80)

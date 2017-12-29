@@ -25,6 +25,7 @@ class UserCtr {
   def getUser(@PathVariable uid: Long): String = dao.beginTransaction(session => {
     val res = OrmTool.selectById(classOf[Student], uid, session, (root: Root[Student]) => {
       root.select("clazz")
+      root.select("team")
     })
     JSON.stringify(res)
   })

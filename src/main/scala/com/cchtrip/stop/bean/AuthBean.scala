@@ -55,12 +55,13 @@ class AuthConfig extends WebSecurityConfigurerAdapter {
       .antMatchers("/teacher/logout").permitAll()
       .antMatchers("/admin/login").permitAll()
       .antMatchers("/admin/logout").permitAll()
-      .antMatchers(HttpMethod.GET, "/admin/category").permitAll()
-      .antMatchers(HttpMethod.GET, "/admin/courseware/**").permitAll()
-      .antMatchers(HttpMethod.GET, "/admin/video/**").permitAll()
-      .antMatchers(HttpMethod.GET, "/admin/question/**").permitAll()
+      .antMatchers(HttpMethod.GET, "/admin/category").authenticated()
+      .antMatchers(HttpMethod.GET, "/admin/courseware/**").authenticated()
+      .antMatchers(HttpMethod.GET, "/admin/video/**").authenticated()
+      .antMatchers(HttpMethod.GET, "/admin/question/**").authenticated()
       .antMatchers("/admin/**").hasRole("ADMIN")
-      .antMatchers("/user/**").authenticated()
+      .antMatchers("/teacher/**").hasRole("TEACHER")
+      .antMatchers("/user/**").hasRole("USER")
       .antMatchers("/**").permitAll()
       .anyRequest().authenticated()
       .and().asInstanceOf[HttpSecurity]
@@ -87,7 +88,7 @@ class AuthService extends UserDetailsService {
       case true =>
         val user = cache(username)
         val grantedAuthorities = new util.ArrayList[GrantedAuthority]()
-        grantedAuthorities.add(new SimpleGrantedAuthority(user.role))
+        grantedAuthorities.add(new SimpleGrantedAuthority(s"ROLE_${user.role}"))
         new User(user.username, user.password, grantedAuthorities)
       case false => throw new UsernameNotFoundException("用户名不存在")
     }
@@ -114,7 +115,7 @@ class AuthBean {
       role match {
         case null => find = true
         case _ => auth.getAuthorities.forEach(a => {
-          if (a.getAuthority == role) {
+          if (a.getAuthority == s"ROLE_$role" || a.getAuthority == role) {
             find = true
           }
         })

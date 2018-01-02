@@ -62,7 +62,6 @@ class AuthConfig extends WebSecurityConfigurerAdapter {
       .antMatchers("/admin/**").hasRole("ADMIN")
       .antMatchers("/teacher/**").hasRole("TEACHER")
       .antMatchers("/user/**").hasRole("USER")
-      .antMatchers("/**").permitAll()
       .anyRequest().authenticated()
       .and().asInstanceOf[HttpSecurity]
   }

@@ -21,8 +21,8 @@ class Student extends EntityBase {
   @Column(length = 32)
   var email: String = _
 
-  @Column(length = 80)
-  var avatar: String = _
+  @Pointer
+  var avatar: FileInfo = _
 
   @Pointer
   var clazz: Clazz = _

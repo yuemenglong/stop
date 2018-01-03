@@ -12,16 +12,8 @@ class Video extends EntityBase {
   @Column(length = 64)
   var name: String = _
 
-  @Column(length = 80, nullable = false)
-  var fileId: String = _
-
-  @Column(length = 64)
-  var fileName: String = _
-
-  var size: Integer = _
-
-  @Column(length = 16)
-  var ext: String = _
+  @Pointer
+  var file: FileInfo = _
 
   var cate0Id: Long = _
   @Pointer

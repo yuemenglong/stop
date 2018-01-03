@@ -24,6 +24,7 @@ class UserCtr {
   @GetMapping(Array(""))
   def getUser(@PathVariable uid: Long): String = dao.beginTransaction(session => {
     val res = OrmTool.selectById(classOf[Student], uid, session, (root: Root[Student]) => {
+      root.select("avatar")
       root.select("clazz")
       root.select("team")
     })
@@ -35,7 +36,9 @@ class UserCtr {
   def putUser(@PathVariable uid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val student = JSON.parse(body, classOf[Student])
     student.id = uid
-    session.execute(Orm.update(student))
+    val ex = Orm.update(student)
+    ex.update("avatar")
+    session.execute(ex)
     JSON.stringify(student)
   })
 

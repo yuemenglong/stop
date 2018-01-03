@@ -1,7 +1,7 @@
 package com.cchtrip.stop.controller.teacher
 
 import com.cchtrip.stop.bean.{AuthService, Dao}
-import com.cchtrip.stop.entity.Student
+import com.cchtrip.stop.entity.{FileInfo, Student}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import org.springframework.web.bind.annotation._
@@ -27,8 +27,14 @@ class StudentCtr {
     student.clazzId = 0L
     student.user.ty = "student"
     student.user.crTime = new Date
+    if (student.avatar == null) {
+      student.avatar = Orm.empty(classOf[FileInfo])
+    }
+    student.avatar.crTime = new Date
+    student.avatar.tag = "avatar"
     val ex = Orm.insert(student)
     ex.insert("user")
+    ex.insert("avatar")
     session.execute(ex)
     AuthService.regist(student.user)
     JSON.stringify(student)
@@ -52,6 +58,7 @@ class StudentCtr {
   def getStudent(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val res = OrmTool.selectById(classOf[Student], id, session, (root: Root[Student]) => {
       root.select("user")
+      root.select("avatar")
     })
     JSON.stringify(res)
   })
@@ -62,6 +69,7 @@ class StudentCtr {
     student.id = id
     val ex = Orm.update(student)
     ex.update("user")
+    ex.update("avatar")
     session.execute(ex)
     AuthService.regist(student.user)
     JSON.stringify(student)
@@ -73,6 +81,7 @@ class StudentCtr {
                      ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Student])
     root.select("user").ignore("password")
+    root.select("avatar")
     val query = Orm.selectFrom(root).limit(limit).offset(offset)
     val res = session.query(query)
     JSON.stringify(res)

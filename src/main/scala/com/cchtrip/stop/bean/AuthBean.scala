@@ -55,14 +55,14 @@ class AuthConfig extends WebSecurityConfigurerAdapter {
       .antMatchers("/teacher/logout").permitAll()
       .antMatchers("/admin/login").permitAll()
       .antMatchers("/admin/logout").permitAll()
-      .antMatchers(HttpMethod.GET, "/admin/category").authenticated()
-      .antMatchers(HttpMethod.GET, "/admin/courseware/**").authenticated()
-      .antMatchers(HttpMethod.GET, "/admin/video/**").authenticated()
-      .antMatchers(HttpMethod.GET, "/admin/question/**").authenticated()
-      .antMatchers("/admin/**").hasRole("ADMIN")
-      .antMatchers("/teacher/**").hasRole("TEACHER")
-      .antMatchers("/user/**").hasRole("USER")
-      .anyRequest().authenticated()
+//      .antMatchers(HttpMethod.GET, "/admin/category").authenticated()
+//      .antMatchers(HttpMethod.GET, "/admin/courseware/**").authenticated()
+//      .antMatchers(HttpMethod.GET, "/admin/video/**").authenticated()
+//      .antMatchers(HttpMethod.GET, "/admin/question/**").authenticated()
+//      .antMatchers("/admin/**").hasRole("ADMIN")
+//      .antMatchers("/teacher/**").hasRole("TEACHER")
+//      .antMatchers("/user/**").hasRole("USER")
+//      .anyRequest().authenticated()
       .and().asInstanceOf[HttpSecurity]
   }
 }

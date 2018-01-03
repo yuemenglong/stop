@@ -66,15 +66,22 @@ export class Courseware {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
-	fileId: string = undefined;
-	fileName: string = undefined;
-	swfName: string = undefined;
-	size: number = undefined;
-	ext: string = undefined;
+	file: FileInfo = new FileInfo();
+	swf: FileInfo = new FileInfo();
 	cate0Id: number = undefined;
 	cate0: Category = new Category();
 	cate1Id: number = undefined;
 	cate1: Category = new Category();
+}
+
+export class FileInfo {
+	id: number = undefined;
+	crTime: string = undefined;
+	fileId: string = undefined;
+	fileName: string = undefined;
+	size: number = undefined;
+	ext: string = undefined;
+	tag: string = undefined;
 }
 
 export class Question {
@@ -155,7 +162,7 @@ export class Student {
 	name: string = undefined;
 	mobile: string = undefined;
 	email: string = undefined;
-	avatar: string = undefined;
+	avatar: FileInfo = new FileInfo();
 	clazz: Clazz = new Clazz();
 	clazzId: number = undefined;
 	team: TeamApply = new TeamApply();
@@ -230,10 +237,7 @@ export class Video {
 	id: number = undefined;
 	crTime: string = undefined;
 	name: string = undefined;
-	fileId: string = undefined;
-	fileName: string = undefined;
-	size: number = undefined;
-	ext: string = undefined;
+	file: FileInfo = new FileInfo();
 	cate0Id: number = undefined;
 	cate0: Category = new Category();
 	cate1Id: number = undefined;

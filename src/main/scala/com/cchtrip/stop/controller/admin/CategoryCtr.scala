@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation._
   "/admin/question-category",
   "/admin/courseware-category",
   "/admin/video-category",
+  "/admin/target-category",
 ), produces = Array("application/json"))
 @ResponseBody
 class CategoryCtr {

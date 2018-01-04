@@ -29,7 +29,9 @@ class VideoCtr {
     require(obj.file != null)
     obj.file.crTime = new Date
     obj.file.tag = "video"
-    session.execute(Orm.insert(obj))
+    val ex = Orm.insert(obj)
+    ex.insert("file")
+    session.execute(ex)
     JSON.stringify(obj)
   })
 
@@ -37,7 +39,9 @@ class VideoCtr {
   def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val obj = JSON.parse(body, classOf[Video])
     obj.id = id
-    session.execute(Orm.update(obj))
+    val ex = Orm.update(obj)
+    ex.update("file")
+    session.execute(ex)
     JSON.stringify(obj)
   })
 
@@ -49,6 +53,8 @@ class VideoCtr {
           ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Video])
     root.select("file")
+    root.select("cate0")
+    root.select("cate1")
     var cond = Orm.cond()
     if (cate0Id != null) {
       cond = cond.and(root.get("cate0Id").eql(cate0Id))

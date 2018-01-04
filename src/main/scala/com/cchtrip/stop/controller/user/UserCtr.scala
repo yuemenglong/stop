@@ -4,7 +4,6 @@ import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
-import io.github.yuemenglong.orm.Session.Session
 import io.github.yuemenglong.orm.lang.types.Types._
 import io.github.yuemenglong.orm.operate.traits.core.Root
 import io.github.yuemenglong.orm.tool.OrmTool
@@ -37,7 +36,12 @@ class UserCtr {
     val student = JSON.parse(body, classOf[Student])
     student.id = uid
     val ex = Orm.update(student)
-    ex.update("avatar")
+    if (student.avatar != null && student.avatar.id == null) {
+      student.avatar.crTime = new Date
+      ex.insert("avatar")
+    } else {
+      ex.update("avatar")
+    }
     session.execute(ex)
     JSON.stringify(student)
   })

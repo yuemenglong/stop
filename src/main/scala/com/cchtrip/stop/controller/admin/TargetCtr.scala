@@ -1,5 +1,8 @@
 package com.cchtrip.stop.controller.admin
 
+import java.io.File
+import java.nio.file.Paths
+
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
 import com.cchtrip.stop.util.NamedException
@@ -8,7 +11,7 @@ import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
 import io.github.yuemenglong.orm.operate.traits.core.Root
 import io.github.yuemenglong.orm.tool.OrmTool
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
 
@@ -16,20 +19,27 @@ import org.springframework.web.bind.annotation._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 @Controller
-@RequestMapping(value = Array("/admin/courseware"), produces = Array("application/json"))
+@RequestMapping(value = Array("/admin/target"), produces = Array("application/json"))
 @ResponseBody
-class CoursewareCtr {
+class TargetCtr {
 
   @Autowired
   var dao: Dao = _
+  @Value("${app.targetDir}")
+  var targetDir: String = _
 
   @PostMapping(Array(""))
   def post(@RequestBody body: String): String = dao.beginTransaction(session => {
-    val obj = JSON.parse(body, classOf[Courseware])
+    val obj = JSON.parse(body, classOf[Target])
     obj.crTime = new Date
     require(obj.file != null)
     obj.file.crTime = new Date
-    obj.file.tag = "courseware"
+    obj.file.tag = "target"
+    require(obj.baseDir != null)
+    if (!Paths.get(targetDir, obj.baseDir, "index.html").toFile.exists()) {
+      throw new NamedException(NamedException.INVALID_PARAM, "路径下没有index文件")
+    }
+
     val ex = Orm.insert(obj)
     ex.insert("file")
     session.execute(ex)
@@ -38,8 +48,12 @@ class CoursewareCtr {
 
   @PutMapping(Array("/{id}"))
   def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
-    val obj = JSON.parse(body, classOf[Courseware])
+    val obj = JSON.parse(body, classOf[Target])
     obj.id = id
+    require(obj.baseDir != null)
+    if (!Paths.get(targetDir, obj.baseDir, "index.html").toFile.exists()) {
+      throw new NamedException(NamedException.INVALID_PARAM, "路径下没有index文件")
+    }
     val ex = Orm.update(obj)
     ex.update("file")
     session.execute(ex)
@@ -52,7 +66,7 @@ class CoursewareCtr {
            cate0Id: Long,
            cate1Id: Long,
           ): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Courseware])
+    val root = Orm.root(classOf[Target])
     root.select("file")
     root.select("cate0")
     root.select("cate1")
@@ -72,7 +86,7 @@ class CoursewareCtr {
   def count(cate0Id: Long,
             cate1Id: Long,
            ): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Courseware])
+    val root = Orm.root(classOf[Target])
     var cond = Orm.cond()
     if (cate0Id != null) {
       cond = cond.and(root.get("cate0Id").eql(cate0Id))
@@ -87,7 +101,7 @@ class CoursewareCtr {
 
   @GetMapping(Array("/{id}"))
   def get(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val res = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
+    val res = OrmTool.selectById(classOf[Target], id, session, (root: Root[Target]) => {
       root.select("file")
     })
     JSON.stringify(res)
@@ -95,8 +109,7 @@ class CoursewareCtr {
 
   @DeleteMapping(Array("/{id}"))
   def delete(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
-    OrmTool.deleteById(classOf[Courseware], id, session)
+    OrmTool.deleteById(classOf[Target], id, session)
     "{}"
   })
-
 }

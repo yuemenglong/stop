@@ -53,6 +53,8 @@ class QuestionCtr {
           ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
+    root.select("cate0")
+    root.select("cate1")
     var cond = Orm.cond()
     if (cate0Id != null) {
       cond = cond.and(root.get("cate0Id").eql(cate0Id))

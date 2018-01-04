@@ -52,7 +52,7 @@ class ConvertSwf {
         <.form(action = "/", method = "POST", attrs = Map("enctype" -> "multipart/form-data")).>(
           <.input(ty = "file", name = "file").>,
           <.input(ty = "submit", value = "submit").>,
-        ),
+        )
       ),
     ).toString()
   }

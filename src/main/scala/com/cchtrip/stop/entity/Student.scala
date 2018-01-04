@@ -8,7 +8,6 @@ import io.github.yuemenglong.orm.lang.types.Types._
   */
 @Entity
 class Student extends EntityBase {
-
   @Pointer
   var user: User = _
 
@@ -33,4 +32,13 @@ class Student extends EntityBase {
 
   @OneToMany
   var jobs: Array[StudentStudyJob] = Array()
+
+  @OneToMany
+  var finished: Array[FinishedTarget] = Array()
+}
+
+@Entity
+class FinishedTarget extends EntityBase {
+  var studentId: Long = _
+  var targetId: Long = _
 }

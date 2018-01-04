@@ -68,11 +68,11 @@
             <artifactId>scala-json</artifactId>
             <version>1.0.6-SNAPSHOT</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>io.github.yuemenglong</groupId>-->
-        <!--<artifactId>scala-template</artifactId>-->
-        <!--<version>0.0.1-SNAPSHOT</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>io.github.yuemenglong</groupId>
+            <artifactId>scala-template</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.cchtrip.utils</groupId>
             <artifactId>cch-utils-admin</artifactId>

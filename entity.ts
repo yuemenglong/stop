@@ -84,6 +84,13 @@ export class FileInfo {
 	tag: string = undefined;
 }
 
+export class FinishedTarget {
+	id: number = undefined;
+	crTime: string = undefined;
+	studentId: number = undefined;
+	targetId: number = undefined;
+}
+
 export class Question {
 	id: number = undefined;
 	crTime: string = undefined;
@@ -167,6 +174,7 @@ export class Student {
 	clazzId: number = undefined;
 	team: TeamApply = undefined;
 	jobs: StudentStudyJob[] = [];
+	finished: FinishedTarget[] = [];
 }
 
 export class StudentStudyJob {

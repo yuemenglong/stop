@@ -1,5 +1,7 @@
 package com.cchtrip.stop.util
 
+import java.io.{InputStream, OutputStream}
+
 import com.cchtrip.stop.bean.ErrorProcessor
 import org.slf4j.LoggerFactory
 
@@ -22,5 +24,18 @@ object Kit {
         }
       }
     }
+  }
+
+  def pipe(is: InputStream, os: OutputStream): Unit = {
+    val buffer = new Array[Byte](4096)
+    Stream.continually({
+      is.read(buffer)
+    }).takeWhile {
+      case -1 => false
+      case 0 => true
+      case n if n > 0 =>
+        os.write(buffer, 0, n)
+        true
+    }.last
   }
 }

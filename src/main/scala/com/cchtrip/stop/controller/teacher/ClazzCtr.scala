@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.teacher
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity.{Clazz, Student}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -22,6 +22,7 @@ class ClazzCtr {
   @PostMapping(Array(""))
   def postClazz(@RequestBody body: String): String = dao.beginTransaction(session => {
     val clazz = JSON.parse(body, classOf[Clazz])
+    clazz.id = IdGenerator.generateId
     clazz.crTime = new Date
     session.execute(Orm.insert(clazz))
     JSON.stringify(clazz)

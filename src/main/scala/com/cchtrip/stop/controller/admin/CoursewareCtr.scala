@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.admin
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
@@ -26,8 +26,10 @@ class CoursewareCtr {
   @PostMapping(Array(""))
   def post(@RequestBody body: String): String = dao.beginTransaction(session => {
     val obj = JSON.parse(body, classOf[Courseware])
+    obj.id = IdGenerator.generateId
     obj.crTime = new Date
     require(obj.file != null)
+    obj.file.id = IdGenerator.generateId
     obj.file.crTime = new Date
     obj.file.tag = "courseware"
     val ex = Orm.insert(obj)

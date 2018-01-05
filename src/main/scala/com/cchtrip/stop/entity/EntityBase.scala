@@ -7,7 +7,7 @@ import io.github.yuemenglong.orm.lang.types.Types._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 class EntityBase {
-  @Id(auto = true)
+  @Id
   var id: Long = _
 
   @DateTime

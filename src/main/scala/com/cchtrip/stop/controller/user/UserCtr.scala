@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.user
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -37,6 +37,7 @@ class UserCtr {
     student.id = uid
     val ex = Orm.update(student)
     if (student.avatar != null && student.avatar.id == null) {
+      student.avatar.id = IdGenerator.generateId
       student.avatar.crTime = new Date
       ex.insert("avatar")
     } else {

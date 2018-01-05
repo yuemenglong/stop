@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.teacher
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -24,6 +24,7 @@ class StudyJobCtr {
   @PostMapping(Array(""))
   def postStudyJob(@RequestBody body: String): String = dao.beginTransaction(session => {
     val job = JSON.parse(body, classOf[StudyJob])
+    job.id = IdGenerator.generateId
     job.crTime = new Date
     // 0. 先保存job
     session.execute(Orm.insert(job))
@@ -36,6 +37,7 @@ class StudyJobCtr {
         .map(_.asInstanceOf[Entity].$$core().fieldMap(s"${ty}Id").asInstanceOf[Long])
       ids.map(id => {
         val rel = new StudentStudyJobItem
+        rel.id = IdGenerator.generateId
         rel.crTime = new Date
         rel.status = "waiting"
         rel.targetId = id
@@ -58,6 +60,7 @@ class StudyJobCtr {
 
     val studentJobs = studentIds.map(id => {
       val sj = new StudentStudyJob
+      sj.id = IdGenerator.generateId
       sj.crTime = new Date
       sj.status = "waiting"
       sj.studentId = id
@@ -68,7 +71,8 @@ class StudyJobCtr {
     val jobItems = studentJobs.flatMap(sj => {
       snapJobItems.map(jobItem => {
         val ret = new StudentStudyJobItem
-        ret.crTime = jobItem.crTime
+        ret.id = IdGenerator.generateId
+        ret.crTime = new Date
         ret.studentStudyJobId = sj.id
         ret.targetId = jobItem.targetId
         ret.status = jobItem.status

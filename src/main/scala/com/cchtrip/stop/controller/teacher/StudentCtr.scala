@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.teacher
 
-import com.cchtrip.stop.bean.{AuthService, Dao}
+import com.cchtrip.stop.bean.{AuthService, Dao, IdGenerator}
 import com.cchtrip.stop.entity.{FileInfo, Student}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -23,13 +23,16 @@ class StudentCtr {
   @PostMapping(Array(""))
   def postStudent(@RequestBody body: String): String = dao.beginTransaction(session => {
     val student = JSON.parse(body, classOf[Student])
+    student.id = IdGenerator.generateId
     student.crTime = new Date
     student.clazzId = 0L
     student.user.ty = "student"
+    student.user.id = IdGenerator.generateId
     student.user.crTime = new Date
     if (student.avatar == null) {
       student.avatar = Orm.empty(classOf[FileInfo])
     }
+    student.avatar.id = IdGenerator.generateId
     student.avatar.crTime = new Date
     student.avatar.tag = "avatar"
     val ex = Orm.insert(student)

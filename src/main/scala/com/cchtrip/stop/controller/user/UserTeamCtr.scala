@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.user
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
@@ -25,6 +25,7 @@ class UserTeamCtr {
   @PostMapping(Array(""))
   def postTeam(@PathVariable uid: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val team = JSON.parse(body, classOf[Team])
+    team.id = IdGenerator.generateId
     team.crTime = new Date
     team.createrId = uid
 
@@ -36,6 +37,7 @@ class UserTeamCtr {
     }
 
     val apply = Orm.empty(classOf[TeamApply])
+    apply.id = IdGenerator.generateId
     apply.crTime = new Date
     apply.studentId = team.createrId
     apply.status = "succ"
@@ -61,7 +63,8 @@ class UserTeamCtr {
       session.execute(ex)
     }
     val apply = new TeamApply
-    apply.crTime = new Date()
+    apply.id = IdGenerator.generateId
+    apply.crTime = new Date
     apply.studentId = uid
     apply.teamId = teamId
     apply.status = "waiting"

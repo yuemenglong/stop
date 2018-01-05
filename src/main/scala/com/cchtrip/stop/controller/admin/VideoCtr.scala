@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.admin
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -25,8 +25,10 @@ class VideoCtr {
   @PostMapping(Array(""))
   def post(@RequestBody body: String): String = dao.beginTransaction(session => {
     val obj = JSON.parse(body, classOf[Video])
+    obj.id = IdGenerator.generateId
     obj.crTime = new Date
     require(obj.file != null)
+    obj.file.id = IdGenerator.generateId
     obj.file.crTime = new Date
     obj.file.tag = "video"
     val ex = Orm.insert(obj)

@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.admin
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -25,8 +25,10 @@ class QuestionCtr {
   @PostMapping(Array(""))
   def post(@RequestBody body: String): String = dao.beginTransaction(session => {
     val obj = JSON.parse(body, classOf[Question])
+    obj.id = IdGenerator.generateId
     obj.crTime = new Date
     if (obj.sc != null) {
+      obj.sc.id = IdGenerator.generateId
       obj.sc.crTime = new Date
     }
     val ex = Orm.insert(obj)

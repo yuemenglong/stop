@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.admin
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
@@ -32,6 +32,7 @@ class CategoryCtr {
   @PostMapping(Array(""))
   def newCategory(@RequestBody body: String): String = dao.beginTransaction(session => {
     val cate = JSON.parse(body, classOf[Category])
+    cate.id = IdGenerator.generateId
     cate.crTime = new Date
     if (cate.level == null || cate.parentId == null) {
       cate.level = 0

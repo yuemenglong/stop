@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.teacher
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -24,9 +24,11 @@ class QuizCtr {
   @PostMapping(Array(""))
   def postQuiz(@RequestBody body: String): String = dao.beginTransaction(session => {
     val quiz = JSON.parse(body, classOf[Quiz])
+    quiz.id = IdGenerator.generateId
     quiz.crTime = new Date
     quiz.questions.foreach(q => {
-      q.crTime = new Date()
+      q.id = IdGenerator.generateId
+      q.crTime = new Date
     })
     val ex = Orm.insert(quiz)
     ex.insert("questions")
@@ -37,6 +39,7 @@ class QuizCtr {
         .from(root).where(root.get("clazzId").eql(quiz.clazzId)))
         .map(id => {
           val job = new QuizJob
+          job.id = IdGenerator.generateId
           job.crTime = new Date
           job.studentId = id
           job.quizId = quiz.id
@@ -49,6 +52,7 @@ class QuizCtr {
     val items = jobs.flatMap(job => {
       quiz.questions.map(q => {
         val item = new QuizJobItem
+        item.id = IdGenerator.generateId
         item.crTime = new Date
         item.questionId = q.questionId
         item.jobId = job.id

@@ -1,6 +1,6 @@
 package com.cchtrip.stop.controller.teacher
 
-import com.cchtrip.stop.bean.Dao
+import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -66,6 +66,7 @@ class CourseCtr {
   @PostMapping(Array(""))
   def newCourse(@RequestBody body: String): String = dao.beginTransaction(session => {
     val course = JSON.parse(body, classOf[Course])
+    course.id = IdGenerator.generateId
     course.crTime = new Date
     session.execute(Orm.insert(course))
     JSON.stringify(course)
@@ -126,6 +127,7 @@ class CourseCtr {
   @PutMapping(Array("/{id}/courseware"))
   def putCourseware(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val item = JSON.parse(body, classOf[CourseCourseware])
+    item.id = IdGenerator.generateId
     item.crTime = new Date
     session.execute(Orm.insert(item))
     JSON.stringify(item)
@@ -140,6 +142,7 @@ class CourseCtr {
   @PutMapping(Array("/{id}/video"))
   def putVideo(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val item = JSON.parse(body, classOf[CourseVideo])
+    item.id = IdGenerator.generateId
     item.crTime = new Date
     session.execute(Orm.insert(item))
     JSON.stringify(item)
@@ -154,6 +157,7 @@ class CourseCtr {
   @PutMapping(Array("/{id}/question"))
   def putQuestion(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
     val item = JSON.parse(body, classOf[CourseQuestion])
+    item.id = IdGenerator.generateId
     item.crTime = new Date
     session.execute(Orm.insert(item))
     JSON.stringify(item)

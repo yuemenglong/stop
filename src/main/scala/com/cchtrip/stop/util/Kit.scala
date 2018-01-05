@@ -1,9 +1,14 @@
 package com.cchtrip.stop.util
 
 import java.io.{InputStream, OutputStream}
+import java.util
+import java.util.regex.Pattern
 
 import com.cchtrip.stop.bean.ErrorProcessor
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
+import org.springframework.core.`type`.filter.RegexPatternTypeFilter
 
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
@@ -37,5 +42,19 @@ object Kit {
         os.write(buffer, 0, n)
         true
     }.last
+  }
+
+  def scanPackage(path: String): Array[String] = {
+    val provider: ClassPathScanningCandidateComponentProvider = new ClassPathScanningCandidateComponentProvider(false)
+    provider.addIncludeFilter(new RegexPatternTypeFilter(Pattern.compile(".*")))
+    val classes: util.Set[BeanDefinition] = provider.findCandidateComponents("com.cchtrip.stop.entity")
+    val iter = classes.iterator()
+    Stream.continually({
+      if (iter.hasNext) {
+        iter.next()
+      } else {
+        null
+      }
+    }).takeWhile(_ != null).map(_.getBeanClassName).toArray
   }
 }

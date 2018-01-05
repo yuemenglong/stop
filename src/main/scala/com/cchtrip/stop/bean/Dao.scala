@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 import javax.annotation.{PostConstruct, PreDestroy}
 
 import com.cchtrip.stop.entity.StudentStudyJobItem
+import com.cchtrip.stop.util.Kit
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.Session.Session
@@ -34,17 +35,7 @@ class Dao {
   var db: Db = _
 
   @PostConstruct def init(): Unit = {
-    val provider: ClassPathScanningCandidateComponentProvider = new ClassPathScanningCandidateComponentProvider(false)
-    provider.addIncludeFilter(new RegexPatternTypeFilter(Pattern.compile(".*")))
-    val classes: util.Set[BeanDefinition] = provider.findCandidateComponents("com.cchtrip.stop.entity")
-    val iter = classes.iterator()
-    val list = Stream.continually({
-      if (iter.hasNext) {
-        iter.next()
-      } else {
-        null
-      }
-    }).takeWhile(_ != null).map(_.getBeanClassName).toArray
+    val list = Kit.scanPackage("com.cchtrip.stop.entity")
     Orm.init(list)
     Orm.setLogger(show_sql)
     JSON.setConstructorMap(OrmTool.getEmptyConstructorMap)

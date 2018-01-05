@@ -18,7 +18,7 @@ import io.github.yuemenglong.orm.lang.types.Types._
 
 @Component class IdGenerator {
   @Value("${workId}")
-  private val workId: Long = _
+  var workId: Long = _
 
   @SuppressWarnings(Array("unused"))
   @PostConstruct def init(): Unit = {

@@ -1,8 +1,7 @@
 package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity._
-import com.cchtrip.stop.entity.res.{Category, Courseware, Question, Video}
+import com.cchtrip.stop.entity.res.Category
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -31,7 +30,7 @@ class CategoryCtr {
   var dao: Dao = _
 
   @PostMapping(Array(""))
-  def newCategory(@RequestBody body: String): String = dao.beginTransaction(session => {
+  def newCategory(@RequestBody body: String): String = dao.resTransaction(session => {
     val cate = JSON.parse(body, classOf[Category])
     cate.id = IdGenerator.generateId
     cate.crTime = new Date
@@ -45,7 +44,7 @@ class CategoryCtr {
 
   //包括更新父子关系
   @PutMapping(Array("/{id}"))
-  def putCategory(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+  def putCategory(@PathVariable id: Long, @RequestBody body: String): String = dao.resTransaction(session => {
     val cate = JSON.parse(body, classOf[Category])
     cate.id = id
     session.execute(Orm.update(cate))
@@ -55,7 +54,7 @@ class CategoryCtr {
   @GetMapping(Array(""))
   def getCategoryAll(level: Integer,
                      @RequestParam(required = true) ty: String,
-                    ): String = dao.beginTransaction(session => {
+                    ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Category])
     if (level == null) {
       val res = session.query(Orm.selectFrom(root).where(root.get("ty").eql(ty)))
@@ -76,10 +75,10 @@ class CategoryCtr {
   })
 
   @DeleteMapping(Array("/{id}"))
-  def deleteCategory(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
+  def deleteCategory(@PathVariable id: Long): String = dao.resTransaction(fn = session => {
     //1. 没有子节点才能删
-    //2. 没有课程相关联才能删
-    val cate = OrmTool.selectById(classOf[Category], id, session)
+    //2. 没有课程相关联才能删(分库后不再有这个限制)
+//    val cate = OrmTool.selectById(classOf[Category], id, session)
 
     {
       val root = Orm.root(classOf[Category])
@@ -89,29 +88,29 @@ class CategoryCtr {
       }
     }
 
-    def relationCountFn = (clazz: Class[_]) => {
-      val root = Orm.root(clazz)
-      session.first(Orm.select(root.count()).from(root).where(root.get("cate0Id").eql(id).or(root.get("cate1Id").eql(id))))
-    }
-
-    cate.ty match {
-      case "course" =>
-        if (relationCountFn(classOf[Course]) > 0) {
-          throw NamedException(NamedException.DEL_CATE_FAIL, "还有课程相关联")
-        }
-      case "courseware" =>
-        if (relationCountFn(classOf[Courseware]) > 0) {
-          throw NamedException(NamedException.DEL_CATE_FAIL, "还有课件相关联")
-        }
-      case "video" =>
-        if (relationCountFn(classOf[Video]) > 0) {
-          throw NamedException(NamedException.DEL_CATE_FAIL, "还有视频相关联")
-        }
-      case "question" =>
-        if (relationCountFn(classOf[Question]) > 0) {
-          throw NamedException(NamedException.DEL_CATE_FAIL, "还有题目相关联")
-        }
-    }
+//    def relationCountFn = (clazz: Class[_]) => {
+//      val root = Orm.root(clazz)
+//      session.first(Orm.select(root.count()).from(root).where(root.get("cate0Id").eql(id).or(root.get("cate1Id").eql(id))))
+//    }
+//
+//    cate.ty match {
+//      case "course" =>
+//        if (relationCountFn(classOf[Course]) > 0) {
+//          throw NamedException(NamedException.DEL_CATE_FAIL, "还有课程相关联")
+//        }
+//      case "courseware" =>
+//        if (relationCountFn(classOf[Courseware]) > 0) {
+//          throw NamedException(NamedException.DEL_CATE_FAIL, "还有课件相关联")
+//        }
+//      case "video" =>
+//        if (relationCountFn(classOf[Video]) > 0) {
+//          throw NamedException(NamedException.DEL_CATE_FAIL, "还有视频相关联")
+//        }
+//      case "question" =>
+//        if (relationCountFn(classOf[Question]) > 0) {
+//          throw NamedException(NamedException.DEL_CATE_FAIL, "还有题目相关联")
+//        }
+//    }
     OrmTool.deleteById(classOf[Category], id, session)
     "{}"
   })

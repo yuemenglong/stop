@@ -1,7 +1,6 @@
 package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity._
 import com.cchtrip.stop.entity.res.Question
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -24,7 +23,7 @@ class QuestionCtr {
   var dao: Dao = _
 
   @PostMapping(Array(""))
-  def post(@RequestBody body: String): String = dao.beginTransaction(session => {
+  def post(@RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Question])
     obj.id = IdGenerator.generateId
     obj.crTime = new Date
@@ -39,7 +38,7 @@ class QuestionCtr {
   })
 
   @PutMapping(Array("/{id}"))
-  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Question])
     obj.id = id
     val ex = Orm.update(obj)
@@ -53,7 +52,7 @@ class QuestionCtr {
            @RequestParam(defaultValue = "0") offset: Long,
            cate0Id: Long,
            cate1Id: Long,
-          ): String = dao.beginTransaction(session => {
+          ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
     root.select("cate0")
@@ -71,7 +70,7 @@ class QuestionCtr {
   })
 
   @GetMapping(Array("/count"))
-  def count(): String = dao.beginTransaction(session => {
+  def count(): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Question])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
@@ -79,7 +78,7 @@ class QuestionCtr {
   })
 
   @GetMapping(Array("/cate-count"))
-  def countByCate(): String = dao.beginTransaction(session => {
+  def countByCate(): String = dao.resTransaction(session => {
     // 默认二级
     val root = Orm.root(classOf[Question])
     val query = Orm.select(root.get("cate1Id").as(classOf[Long]), root.count("id"))
@@ -89,7 +88,7 @@ class QuestionCtr {
   })
 
   @GetMapping(Array("/{id}"))
-  def get(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def get(@PathVariable id: Long): String = dao.resTransaction(session => {
     val res = OrmTool.selectById(classOf[Question], id, session, (root: Root[Question]) => {
       root.select("sc")
     })
@@ -97,7 +96,7 @@ class QuestionCtr {
   })
 
   @DeleteMapping(Array("/{id}"))
-  def delete(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
+  def delete(@PathVariable id: Long): String = dao.resTransaction(fn = session => {
     OrmTool.deleteById(classOf[Question], id, session, (root: Root[Question]) => {
       Array(root.leftJoin("sc"))
     })

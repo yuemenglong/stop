@@ -1,7 +1,6 @@
 package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity._
 import com.cchtrip.stop.entity.res.Video
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
@@ -24,7 +23,7 @@ class VideoCtr {
   var dao: Dao = _
 
   @PostMapping(Array(""))
-  def post(@RequestBody body: String): String = dao.beginTransaction(session => {
+  def post(@RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Video])
     obj.id = IdGenerator.generateId
     obj.crTime = new Date
@@ -39,7 +38,7 @@ class VideoCtr {
   })
 
   @PutMapping(Array("/{id}"))
-  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Video])
     obj.id = id
     val ex = Orm.update(obj)
@@ -53,7 +52,7 @@ class VideoCtr {
            @RequestParam(defaultValue = "0") offset: Long,
            cate0Id: Long,
            cate1Id: Long,
-          ): String = dao.beginTransaction(session => {
+          ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Video])
     root.select("file")
     root.select("cate0")
@@ -73,7 +72,7 @@ class VideoCtr {
   @GetMapping(Array("/count"))
   def count(cate0Id: Long,
             cate1Id: Long,
-           ): String = dao.beginTransaction(session => {
+           ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Video])
     var cond = Orm.cond()
     if (cate0Id != null) {
@@ -88,7 +87,7 @@ class VideoCtr {
   })
 
   @GetMapping(Array("/{id}"))
-  def get(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def get(@PathVariable id: Long): String = dao.resTransaction(session => {
     val res = OrmTool.selectById(classOf[Video], id, session, (root: Root[Video]) => {
       root.select("file")
     })
@@ -96,7 +95,7 @@ class VideoCtr {
   })
 
   @DeleteMapping(Array("/{id}"))
-  def delete(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
+  def delete(@PathVariable id: Long): String = dao.resTransaction(fn = session => {
     OrmTool.deleteById(classOf[Video], id, session)
     "{}"
   })

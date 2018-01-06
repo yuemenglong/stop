@@ -1,10 +1,8 @@
 package com.cchtrip.stop.controller.admin
 
-import java.io.File
 import java.nio.file.Paths
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity._
 import com.cchtrip.stop.entity.res.Target
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
@@ -30,7 +28,7 @@ class TargetCtr {
   var targetDir: String = _
 
   @PostMapping(Array(""))
-  def post(@RequestBody body: String): String = dao.beginTransaction(session => {
+  def post(@RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Target])
     obj.id = IdGenerator.generateId
     obj.crTime = new Date
@@ -50,7 +48,7 @@ class TargetCtr {
   })
 
   @PutMapping(Array("/{id}"))
-  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Target])
     obj.id = id
     require(obj.baseDir != null)
@@ -68,7 +66,7 @@ class TargetCtr {
            @RequestParam(defaultValue = "0") offset: Long,
            cate0Id: Long,
            cate1Id: Long,
-          ): String = dao.beginTransaction(session => {
+          ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Target])
     root.select("file")
     root.select("cate0")
@@ -88,7 +86,7 @@ class TargetCtr {
   @GetMapping(Array("/count"))
   def count(cate0Id: Long,
             cate1Id: Long,
-           ): String = dao.beginTransaction(session => {
+           ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Target])
     var cond = Orm.cond()
     if (cate0Id != null) {
@@ -103,7 +101,7 @@ class TargetCtr {
   })
 
   @GetMapping(Array("/{id}"))
-  def get(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def get(@PathVariable id: Long): String = dao.resTransaction(session => {
     val res = OrmTool.selectById(classOf[Target], id, session, (root: Root[Target]) => {
       root.select("file")
     })
@@ -111,7 +109,7 @@ class TargetCtr {
   })
 
   @DeleteMapping(Array("/{id}"))
-  def delete(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
+  def delete(@PathVariable id: Long): String = dao.resTransaction(fn = session => {
     OrmTool.deleteById(classOf[Target], id, session)
     "{}"
   })

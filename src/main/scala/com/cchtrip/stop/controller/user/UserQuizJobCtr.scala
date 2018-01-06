@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.user
 
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
+import com.cchtrip.stop.entity.res.Question
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm

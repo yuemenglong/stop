@@ -1,4 +1,4 @@
-package com.cchtrip.stop.entity
+package com.cchtrip.stop.entity.res
 
 import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Enum, OneToMany, Pointer}
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -6,7 +6,7 @@ import io.github.yuemenglong.orm.lang.types.Types._
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
-@Entity
+@Entity(db = "stop_res")
 class Category extends EntityBase {
   @Column(length = 32)
   var name: String = _

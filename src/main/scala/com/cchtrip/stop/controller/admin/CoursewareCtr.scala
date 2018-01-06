@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
+import com.cchtrip.stop.entity.res.Courseware
 import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm

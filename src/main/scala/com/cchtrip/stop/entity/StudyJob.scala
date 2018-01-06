@@ -1,5 +1,6 @@
 package com.cchtrip.stop.entity
 
+import com.cchtrip.stop.entity.res.EntityBase
 import io.github.yuemenglong.json.lang.JsonDate
 import io.github.yuemenglong.orm.lang.anno._
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -8,7 +9,7 @@ import io.github.yuemenglong.orm.lang.types.Types._
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
 
-@Entity
+@Entity(db = "stop")
 class StudyJob extends EntityBase {
   var name: String = _
   @Pointer
@@ -25,7 +26,7 @@ class StudyJob extends EntityBase {
   var jobs: Array[StudentStudyJob] = Array()
 }
 
-@Entity
+@Entity(db = "stop")
 class StudentStudyJob extends EntityBase {
   @Pointer
   var job: StudyJob = _
@@ -41,7 +42,7 @@ class StudentStudyJob extends EntityBase {
   var items: Array[StudentStudyJobItem] = Array()
 }
 
-@Entity
+@Entity(db = "stop")
 class StudentStudyJobItem extends EntityBase {
   var studentStudyJobId: Long = _
   var targetId: Long = _

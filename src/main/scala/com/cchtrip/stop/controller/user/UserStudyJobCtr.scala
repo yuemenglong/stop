@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.user
 
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
+import com.cchtrip.stop.entity.res.{Courseware, Question, Video}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.Session.Session

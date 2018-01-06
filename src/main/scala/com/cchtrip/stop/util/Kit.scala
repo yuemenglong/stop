@@ -47,7 +47,7 @@ object Kit {
   def scanPackage(path: String): Array[String] = {
     val provider: ClassPathScanningCandidateComponentProvider = new ClassPathScanningCandidateComponentProvider(false)
     provider.addIncludeFilter(new RegexPatternTypeFilter(Pattern.compile(".*")))
-    val classes: util.Set[BeanDefinition] = provider.findCandidateComponents("com.cchtrip.stop.entity")
+    val classes: util.Set[BeanDefinition] = provider.findCandidateComponents(path)
     val iter = classes.iterator()
     Stream.continually({
       if (iter.hasNext) {

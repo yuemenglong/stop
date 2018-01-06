@@ -1,5 +1,6 @@
 package com.cchtrip.stop.entity
 
+import com.cchtrip.stop.entity.res.{EntityBase, Question}
 import io.github.yuemenglong.json.lang.JsonDate
 import io.github.yuemenglong.orm.lang.anno.{Column, Entity, Enum, Ignore, OneToMany, Pointer}
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -7,7 +8,7 @@ import io.github.yuemenglong.orm.lang.types.Types._
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
-@Entity
+@Entity(db = "stop")
 class Quiz extends EntityBase {
   @Column(length = 32)
   var name: String = _
@@ -28,7 +29,7 @@ class Quiz extends EntityBase {
   var jobs: Array[QuizJob] = Array()
 }
 
-@Entity
+@Entity(db = "stop")
 class QuizQuestion extends EntityBase {
   @Pointer
   var quiz: Quiz = _
@@ -39,7 +40,7 @@ class QuizQuestion extends EntityBase {
   var questionId: Long = _
 }
 
-@Entity
+@Entity(db = "stop")
 class QuizJob extends EntityBase {
   @Pointer
   var quiz: Quiz = _
@@ -64,7 +65,7 @@ class QuizJob extends EntityBase {
   var totalScore: Double = _
 }
 
-@Entity
+@Entity(db = "stop")
 class QuizJobItem extends EntityBase {
 
   var jobId: Long = _

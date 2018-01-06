@@ -36,7 +36,7 @@ class UserStudyJobCtr {
     val query = Orm.selectFrom(root).where(root.get("studentId").eql(uid)
       .and(cond)).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -49,7 +49,7 @@ class UserStudyJobCtr {
     }
     val query = Orm.select(root.count()).from(root).where(root.get("studentId").eql(uid).and(cond))
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
@@ -59,7 +59,7 @@ class UserStudyJobCtr {
     root.select("job")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   def updateStudyJobStatus(session: Session, item: StudentStudyJobItem): Unit = {
@@ -123,7 +123,7 @@ class UserStudyJobCtr {
         .where(root.get("id").eql(id)))
     }
     updateStudyJobStatus(session, job)
-    JSON.stringify(job)
+    JSON.stringifyJs(job)
   })
 
   @GetMapping(Array("/{jid}/question/{id}"))
@@ -133,7 +133,7 @@ class UserStudyJobCtr {
     root.ignore("answer")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val question = session.first(query)
-    JSON.stringify(question)
+    JSON.stringifyJs(question)
   })
 
   @GetMapping(Array("/{jid}/courseware/{id}"))
@@ -141,7 +141,7 @@ class UserStudyJobCtr {
     val root = Orm.root(classOf[Courseware])
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val item = session.first(query)
-    JSON.stringify(item)
+    JSON.stringifyJs(item)
   })
 
   @GetMapping(Array("/{jid}/video/{id}"))
@@ -149,6 +149,6 @@ class UserStudyJobCtr {
     val root = Orm.root(classOf[Video])
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val item = session.first(query)
-    JSON.stringify(item)
+    JSON.stringifyJs(item)
   })
 }

@@ -46,7 +46,7 @@ class UserTeamCtr {
     ex.insert("students")
     session.execute(ex)
 
-    JSON.stringify(team)
+    JSON.stringifyJs(team)
   })
 
   // 加入Team
@@ -109,7 +109,7 @@ class UserTeamCtr {
     val res = OrmTool.selectById(classOf[Student], uid, session, (root: Root[Student]) => {
       root.select("team").select("team").select("students").select("student")
     })
-    JSON.stringify(res.team)
+    JSON.stringifyJs(res.team)
   })
 
   @PutMapping(Array("/students/{aid}"))

@@ -1,6 +1,5 @@
 package com.cchtrip.stop.entity.res
 
-import com.cchtrip.stop.entity.QuestionChoice
 import io.github.yuemenglong.orm.lang.anno._
 import io.github.yuemenglong.orm.lang.types.Types._
 

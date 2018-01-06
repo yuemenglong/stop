@@ -34,7 +34,7 @@ class UserAuthCtr {
     val user = JSON.parse(body, classOf[LoginUser])
     authBean.auth(user, "USER")
     val root = Orm.root(classOf[Student])
-    JSON.stringify(session.first(Orm.selectFrom(root)
+    JSON.stringifyJs(session.first(Orm.selectFrom(root)
       .where(root.leftJoin("user").get("username").eql(user.username))))
   })
 
@@ -60,7 +60,7 @@ class UserAuthCtr {
   //      }
   //      //      student.password = null
   //      auth.isAuthenticated match {
-  //        case true => JSON.stringify(student)
+  //        case true => JSON.stringifyJs(student)
   //        case false => throw NamedException(NamedException.AUTH_FAIL, "登录失败")
   //      }
   //    } catch {

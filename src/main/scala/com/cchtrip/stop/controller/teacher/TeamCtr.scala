@@ -34,7 +34,7 @@ class TeamCtr {
     val res = OrmTool.selectById(classOf[Team], id, session, (root: Root[Team]) => {
       root.select("students").select("student")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/list"))
@@ -53,7 +53,7 @@ class TeamCtr {
       team.studentCount = count
       team
     }
-    JSON.stringify(teams)
+    JSON.stringifyJs(teams)
   })
 
   @GetMapping(Array("/count"))
@@ -61,6 +61,6 @@ class TeamCtr {
     val root = Orm.root(classOf[Team])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 }

@@ -67,7 +67,7 @@ class StudyJobCtr {
       sj.jobId = job.id
       Orm.convert(sj)
     })
-    session.execute(Orm.insert(classOf[StudentStudyJob]).values(studentJobs))
+    session.execute(Orm.insert(studentJobs))
     val jobItems = studentJobs.flatMap(sj => {
       snapJobItems.map(jobItem => {
         val ret = new StudentStudyJobItem
@@ -81,7 +81,7 @@ class StudyJobCtr {
       })
     })
     session.execute(Orm.insert(classOf[StudentStudyJobItem]).values(jobItems))
-    JSON.stringify(job)
+    JSON.stringifyJs(job)
   })
 
   @DeleteMapping(Array("/{id}"))
@@ -106,7 +106,7 @@ class StudyJobCtr {
     root.select("course")
     val query = Orm.selectFrom(root).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -114,7 +114,7 @@ class StudyJobCtr {
     val root = Orm.root(classOf[StudyJob])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @PutMapping(Array("/{id}"))
@@ -122,7 +122,7 @@ class StudyJobCtr {
     val job = JSON.parse(body, classOf[StudyJob])
     job.id = id
     session.execute(Orm.update(job))
-    JSON.stringify(job)
+    JSON.stringifyJs(job)
   })
 
   @GetMapping(Array("/{id}"))
@@ -146,6 +146,6 @@ class StudyJobCtr {
         }
       })
     }
-    JSON.stringify(job)
+    JSON.stringifyJs(job)
   })
 }

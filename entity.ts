@@ -68,15 +68,6 @@ export class FinishedTarget {
 	targetId: number = undefined;
 }
 
-export class QuestionChoice {
-	id: number = undefined;
-	crTime: string = undefined;
-	a: string = undefined;
-	b: string = undefined;
-	c: string = undefined;
-	d: string = undefined;
-}
-
 export class Quiz {
 	id: number = undefined;
 	crTime: string = undefined;
@@ -170,6 +161,15 @@ export class Question {
 	cate0: Category = undefined;
 	cate1Id: number = undefined;
 	cate1: Category = undefined;
+}
+
+export class QuestionChoice {
+	id: number = undefined;
+	crTime: string = undefined;
+	a: string = undefined;
+	b: string = undefined;
+	c: string = undefined;
+	d: string = undefined;
 }
 
 export class Target {

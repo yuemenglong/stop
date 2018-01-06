@@ -34,7 +34,7 @@ class CoursewareCtr {
     val ex = Orm.insert(obj)
     ex.insert("file")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @PutMapping(Array("/{id}"))
@@ -44,7 +44,7 @@ class CoursewareCtr {
     val ex = Orm.update(obj)
     ex.update("file")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @GetMapping(Array("/list"))
@@ -66,7 +66,7 @@ class CoursewareCtr {
     }
     val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -83,7 +83,7 @@ class CoursewareCtr {
     }
     val query = Orm.select(root.count()).from(root).where(cond)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
@@ -91,7 +91,7 @@ class CoursewareCtr {
     val res = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
       root.select("file")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @DeleteMapping(Array("/{id}"))

@@ -62,7 +62,7 @@ class UserQuizJobCtr {
       o.finishCount = finishCountMap(o.id)
       o.totalScore = scoreMap(o.id)
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -75,7 +75,7 @@ class UserQuizJobCtr {
     }
     val query = Orm.select(root.count()).from(root).where(root.get("studentId").eql(uid).and(cond))
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
@@ -85,7 +85,7 @@ class UserQuizJobCtr {
     root.select("quiz")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   def updateStatus(session: Session, item: QuizJobItem): Unit = {
@@ -133,7 +133,7 @@ class UserQuizJobCtr {
     session.execute(Orm.update(item))
     //    updateStatus(session, item)
     item.correct = null
-    JSON.stringify(item)
+    JSON.stringifyJs(item)
   })
 
   @PutMapping(Array("/{jid}"))
@@ -156,7 +156,7 @@ class UserQuizJobCtr {
         jobRet.score = score
         session.execute(Orm.update(jobRet))
         jobRet.items = items
-        val ret = JSON.stringify(jobRet)
+        val ret = JSON.stringifyJs(jobRet)
 
         // 测试整个quiz是否完成
         val _ = {

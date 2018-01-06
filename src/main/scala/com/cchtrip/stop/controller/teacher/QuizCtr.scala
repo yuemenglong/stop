@@ -46,7 +46,7 @@ class QuizCtr {
           job.status = "waiting"
           Orm.convert(job)
         })
-      session.execute(Orm.insert(classOf[QuizJob]).values(jobs))
+      session.execute(Orm.insert(jobs))
       jobs
     }
     val items = jobs.flatMap(job => {
@@ -60,8 +60,8 @@ class QuizCtr {
         Orm.convert(item)
       })
     })
-    session.execute(Orm.insert(classOf[QuizJobItem]).values(items))
-    JSON.stringify(quiz)
+    session.execute(Orm.insert(items))
+    JSON.stringifyJs(quiz)
   })
 
   @DeleteMapping(Array("/{id}"))
@@ -85,7 +85,7 @@ class QuizCtr {
     root.select("clazz")
     val query = Orm.selectFrom(root).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -93,25 +93,31 @@ class QuizCtr {
     val root = Orm.root(classOf[Quiz])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
   def getQuiz(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Quiz])
-    root.select("questions").select("question")
+    root.select("questions")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val res = session.first(query)
-    JSON.stringify(res)
+    dao.resTransaction(session => {
+      OrmTool.attach(res.questions, "question", session)
+    })
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}/questions"))
   def getQuizQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[QuizQuestion])
-    root.select("question")
+    //    root.select("question")
     val query = Orm.selectFrom(root).where(root.get("quizId").eql(id))
     val res = session.query(query)
-    JSON.stringify(res)
+    dao.resTransaction(session => {
+      OrmTool.attach(res, "question", session)
+    })
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}/jobs"))
@@ -120,7 +126,7 @@ class QuizCtr {
     root.select("student")
     val query = Orm.selectFrom(root).where(root.get("quizId").eql(id))
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}/jobs/{jid}"))
@@ -129,7 +135,6 @@ class QuizCtr {
     root.select("items")
     val query = Orm.selectFrom(root).where(root.get("id").eql(jid))
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
-
 }

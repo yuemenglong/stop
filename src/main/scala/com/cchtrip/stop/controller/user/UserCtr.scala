@@ -27,7 +27,7 @@ class UserCtr {
       root.select("clazz")
       root.select("team")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
 
@@ -44,7 +44,7 @@ class UserCtr {
       ex.update("avatar")
     }
     session.execute(ex)
-    JSON.stringify(student)
+    JSON.stringifyJs(student)
   })
 
 }

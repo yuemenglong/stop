@@ -39,7 +39,7 @@ class CategoryCtr {
       cate.parentId = 0L
     }
     session.execute(Orm.insert(cate))
-    JSON.stringify(cate)
+    JSON.stringifyJs(cate)
   })
 
   //包括更新父子关系
@@ -48,7 +48,7 @@ class CategoryCtr {
     val cate = JSON.parse(body, classOf[Category])
     cate.id = id
     session.execute(Orm.update(cate))
-    JSON.stringify(cate)
+    JSON.stringifyJs(cate)
   })
 
   @GetMapping(Array(""))
@@ -66,11 +66,11 @@ class CategoryCtr {
         }
       })
       val ret = map.values.filter(_.level == 0).toArray
-      JSON.stringify(ret)
+      JSON.stringifyJs(ret)
     } else {
       val res = session.query(Orm.selectFrom(root)
         .where(root.get("level").eql(level).and(root.get("ty").eql(ty))))
-      JSON.stringify(res)
+      JSON.stringifyJs(res)
     }
   })
 

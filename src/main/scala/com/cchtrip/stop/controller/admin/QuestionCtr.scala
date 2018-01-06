@@ -34,7 +34,7 @@ class QuestionCtr {
     val ex = Orm.insert(obj)
     ex.insert("sc")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @PutMapping(Array("/{id}"))
@@ -44,7 +44,7 @@ class QuestionCtr {
     val ex = Orm.update(obj)
     ex.update("sc")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @GetMapping(Array("/list"))
@@ -66,7 +66,7 @@ class QuestionCtr {
     }
     val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -74,7 +74,7 @@ class QuestionCtr {
     val root = Orm.root(classOf[Question])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/cate-count"))
@@ -84,7 +84,7 @@ class QuestionCtr {
     val query = Orm.select(root.get("cate1Id").as(classOf[Long]), root.count("id"))
       .from(root).where(root.get("cate1Id").notNull()).groupBy("cate1Id")
     val res = session.query(query).map(p => (p._1.toString, p._2)).toMap
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
@@ -92,7 +92,7 @@ class QuestionCtr {
     val res = OrmTool.selectById(classOf[Question], id, session, (root: Root[Question]) => {
       root.select("sc")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @DeleteMapping(Array("/{id}"))

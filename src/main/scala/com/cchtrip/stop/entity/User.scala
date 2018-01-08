@@ -9,13 +9,13 @@ import io.github.yuemenglong.orm.lang.types.Types._
   */
 @Entity(db = "stop")
 class User extends EntityBase {
-  @Column(length = 32)
+  @Column(length = 32, nullable = false)
   var username: String = _
 
-  @Column(length = 32)
+  @Column(length = 32, nullable = false)
   var password: String = _
 
-  @Column(length = 32)
+  @Column(length = 32, nullable = false)
   var role: String = _
 
   @Enum(Array("teacher", "student"))

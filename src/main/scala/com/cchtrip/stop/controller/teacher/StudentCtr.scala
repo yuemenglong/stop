@@ -28,6 +28,7 @@ class StudentCtr {
     student.clazzId = 0L
     student.user.ty = "student"
     student.user.id = IdGenerator.generateId
+    student.user.role = "USER"
     student.user.crTime = new Date
 
     val ex = Orm.insert(student)

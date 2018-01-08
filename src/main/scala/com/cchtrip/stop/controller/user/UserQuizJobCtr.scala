@@ -42,13 +42,24 @@ class UserQuizJobCtr {
       val root = Orm.root(classOf[QuizJobItem])
       session.query(Orm.select(root.get("jobId").as(classOf[Long]),
         root.count("id")).from(root)
-        .where(root.get("jobId").in(ids))).toMap
+        .where(root.get("jobId").in(ids)).groupBy("jobId")).toMap
     }
-    val scoreMap = {
+    val totalScoreMap: Map[Long, Double] = {
       val root = Orm.root(classOf[QuizJobItem])
-      session.query(Orm.select(root.get("jobId").as(classOf[Long]),
-        root.sum(root.leftJoin("question").get("score"))).from(root)
-        .where(root.get("jobId").in(ids))).toMap
+      val jidQids = session.query(Orm.select(root.get("jobId").as(classOf[Long]),
+        root.get("questionId").as(classOf[Long])).from(root)
+        .where(root.get("jobId").in(ids)))
+      val qids = jidQids.map(_._2).distinct
+      qids.length match {
+        case 0 => Map[Long, Double]()
+        case _ =>
+          val scoreMap = dao.resTransaction(session => {
+            val root = Orm.root(classOf[Question])
+            session.query(Orm.select(root.get("id").asLong(), root.get("score").asDouble())
+              .from(root).where(root.get("id").in(qids))).toMap
+          })
+          jidQids.map(p => (p._1, scoreMap(p._2))).groupBy(_._1).mapValues(_.map(_._2.doubleValue()).sum)
+      }
     }
     val finishCountMap = {
       val root = Orm.root(classOf[QuizJobItem])
@@ -58,9 +69,9 @@ class UserQuizJobCtr {
         .groupBy("jobId")).toMap
     }
     res.foreach(o => {
-      o.itemCount = itemCountMap(o.id)
-      o.finishCount = finishCountMap(o.id)
-      o.totalScore = scoreMap(o.id)
+      o.itemCount = itemCountMap.getOrElse(o.id, 0L)
+      o.finishCount = finishCountMap.getOrElse(o.id, 0L)
+      o.totalScore = totalScoreMap.getOrElse(o.id, 0.0)
     })
     JSON.stringifyJs(res)
   })
@@ -81,10 +92,14 @@ class UserQuizJobCtr {
   @GetMapping(Array("/{id}"))
   def getJobDetail(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[QuizJob])
-    root.select("items").select("question").select("sc")
+    root.select("items")
+    //      .select("question").select("sc")
     root.select("quiz")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val res = session.first(query)
+    dao.resTransaction(session => {
+      OrmTool.attach(res.items, "question", session, join => join.select("sc"))
+    })
     JSON.stringifyJs(res)
   })
 
@@ -112,16 +127,21 @@ class UserQuizJobCtr {
                ): String = dao.beginTransaction(session => {
     val question = {
       val root = Orm.root(classOf[QuizJobItem])
-      val query = Orm.select(root.join("question").as(classOf[Question]))
-        .from(root).where(root.get("id").eql(id))
-      session.first(query)
+      val qid = session.first(Orm.select(root.get("questionId").asLong()).from(root)
+        .where(root.get("id").eql(id)))
+      dao.resTransaction(session => {
+        OrmTool.selectById(classOf[Question], qid, session)
+      })
+      //      val query = Orm.select(root.join("question").as(classOf[Question]))
+      //        .from(root).where(root.get("id").eql(id))
+      //      session.first(query)
     }
     val answer = JSON.parse(body).asObj().getStr("answer")
     // 对比题目正确性
     // 设置item完成情况
     val item = Orm.empty(classOf[QuizJobItem])
     item.id = id
-    item.jobId = jid
+    //    item.jobId = jid
     item.answer = answer
     item.status = "succ"
     item.correct = question.answer == answer

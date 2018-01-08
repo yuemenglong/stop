@@ -4,9 +4,7 @@ import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
-import io.github.yuemenglong.orm.lang.interfaces.Entity
 import io.github.yuemenglong.orm.lang.types.Types._
-import io.github.yuemenglong.orm.operate.traits.core.Root
 import io.github.yuemenglong.orm.tool.OrmTool
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation._
@@ -24,6 +22,7 @@ class QuizCtr {
   @PostMapping(Array(""))
   def postQuiz(@RequestBody body: String): String = dao.beginTransaction(session => {
     val quiz = JSON.parse(body, classOf[Quiz])
+    require(quiz.questions.length > 0)
     quiz.id = IdGenerator.generateId
     quiz.crTime = new Date
     quiz.questions.foreach(q => {
@@ -33,6 +32,7 @@ class QuizCtr {
     val ex = Orm.insert(quiz)
     ex.insert("questions")
     session.execute(ex)
+
     val jobs = {
       val root = Orm.root(classOf[Student])
       val jobs = session.query(Orm.select(root.get("id").as(classOf[Long]))

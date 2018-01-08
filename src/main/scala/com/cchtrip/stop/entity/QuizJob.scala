@@ -67,7 +67,6 @@ class QuizJob extends EntityBase {
 
 @Entity(db = "stop")
 class QuizJobItem extends EntityBase {
-
   var jobId: Long = _
   var answer: String = _
   var score: Double = _

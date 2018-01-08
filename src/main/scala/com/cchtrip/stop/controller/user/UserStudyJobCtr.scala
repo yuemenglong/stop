@@ -127,7 +127,7 @@ class UserStudyJobCtr {
   })
 
   @GetMapping(Array("/{jid}/question/{id}"))
-  def getQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def getQuestion(@PathVariable id: Long): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
     root.ignore("answer")
@@ -137,18 +137,24 @@ class UserStudyJobCtr {
   })
 
   @GetMapping(Array("/{jid}/courseware/{id}"))
-  def getCourseware(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Courseware])
-    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
-    val item = session.first(query)
+  def getCourseware(@PathVariable id: Long): String = dao.resTransaction(session => {
+    val item = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
+      root.select("file")
+    })
+    //    val root = Orm.root(classOf[Courseware])
+    //    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
+    //    val item = session.first(query)
     JSON.stringifyJs(item)
   })
 
   @GetMapping(Array("/{jid}/video/{id}"))
-  def getVideo(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Video])
-    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
-    val item = session.first(query)
+  def getVideo(@PathVariable id: Long): String = dao.resTransaction(session => {
+    //    val root = Orm.root(classOf[Video])
+    //    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
+    //    val item = session.first(query)
+    val item = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
+      root.select("file")
+    })
     JSON.stringifyJs(item)
   })
 }

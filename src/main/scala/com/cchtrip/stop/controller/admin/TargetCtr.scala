@@ -3,8 +3,8 @@ package com.cchtrip.stop.controller.admin
 import java.nio.file.Paths
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity.res.Target
-import com.cchtrip.stop.util.NamedException
+import com.cchtrip.stop.entity.res.{FileInfo, Target}
+import com.cchtrip.stop.util.{Kit, NamedException}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -26,10 +26,16 @@ class TargetCtr {
   var dao: Dao = _
   @Value("${app.targetDir}")
   var targetDir: String = _
+  @Value("${app.uploadDir}")
+  var uploadDir: String = _
 
   @PostMapping(Array(""))
   def post(@RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Target])
+    val files = JSON.parse(body).asObj().get("files").as(classOf[Array[FileInfo]])
+    if (!files.exists(_.fileName == "index.html")) {
+      throw new NamedException(NamedException.INVALID_PARAM, "没有index.html文件")
+    }
     obj.id = IdGenerator.generateId
     obj.crTime = new Date
     require(obj.file != null)
@@ -37,9 +43,13 @@ class TargetCtr {
     obj.file.crTime = new Date
     obj.file.tag = "target"
     require(obj.baseDir != null)
-    if (!Paths.get(targetDir, obj.baseDir, "index.html").toFile.exists()) {
-      throw new NamedException(NamedException.INVALID_PARAM, "路径下没有index文件")
-    }
+    val path = Paths.get(targetDir, obj.baseDir).toString
+    Kit.mkdir(path)
+    files.foreach(f => {
+      val from = Paths.get(uploadDir, f.fileId).toString
+      val to = Paths.get(path, f.fileName).toString
+      Kit.mv(from, to)
+    })
 
     val ex = Orm.insert(obj)
     ex.insert("file")

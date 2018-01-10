@@ -1,6 +1,7 @@
 package com.cchtrip.stop.util
 
-import java.io.{InputStream, OutputStream}
+import java.io.{File, InputStream, OutputStream}
+import java.nio.file.Path
 import java.util
 import java.util.regex.Pattern
 
@@ -15,6 +16,17 @@ import org.springframework.core.`type`.filter.RegexPatternTypeFilter
   */
 object Kit {
   private val logger = LoggerFactory.getLogger("")
+
+  def mkdir(path: String): Boolean = {
+    val file = new File(path)
+    file.mkdirs()
+  }
+
+  def mv(from: String, to: String): Boolean = {
+    val f = new File(from)
+    f.renameTo(new File(to))
+  }
+
 
   def logError(e: Throwable) {
     e match {

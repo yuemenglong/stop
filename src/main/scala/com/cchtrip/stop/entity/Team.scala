@@ -1,12 +1,13 @@
 package com.cchtrip.stop.entity
 
+import com.cchtrip.stop.entity.res.EntityBase
 import io.github.yuemenglong.orm.lang.anno._
 import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
-@Entity
+@Entity(db = "stop")
 class Team extends EntityBase {
   @Column(length = 32)
   var name: String = _
@@ -22,7 +23,7 @@ class Team extends EntityBase {
   var studentCount: Long = _
 }
 
-@Entity
+@Entity(db = "stop")
 class TeamApply extends EntityBase {
   @Pointer
   var student: Student = _

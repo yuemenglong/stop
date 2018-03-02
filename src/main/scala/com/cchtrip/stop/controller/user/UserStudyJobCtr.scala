@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.user
 
 import com.cchtrip.stop.bean.Dao
 import com.cchtrip.stop.entity._
+import com.cchtrip.stop.entity.res.{Courseware, Question, Video}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.Session.Session
@@ -35,7 +36,7 @@ class UserStudyJobCtr {
     val query = Orm.selectFrom(root).where(root.get("studentId").eql(uid)
       .and(cond)).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -48,7 +49,7 @@ class UserStudyJobCtr {
     }
     val query = Orm.select(root.count()).from(root).where(root.get("studentId").eql(uid).and(cond))
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
@@ -58,7 +59,7 @@ class UserStudyJobCtr {
     root.select("job")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   def updateStudyJobStatus(session: Session, item: StudentStudyJobItem): Unit = {
@@ -122,32 +123,38 @@ class UserStudyJobCtr {
         .where(root.get("id").eql(id)))
     }
     updateStudyJobStatus(session, job)
-    JSON.stringify(job)
+    JSON.stringifyJs(job)
   })
 
   @GetMapping(Array("/{jid}/question/{id}"))
-  def getQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def getQuestion(@PathVariable id: Long): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Question])
     root.select("sc")
     root.ignore("answer")
     val query = Orm.selectFrom(root).where(root.get("id").eql(id))
     val question = session.first(query)
-    JSON.stringify(question)
+    JSON.stringifyJs(question)
   })
 
   @GetMapping(Array("/{jid}/courseware/{id}"))
-  def getCourseware(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Courseware])
-    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
-    val item = session.first(query)
-    JSON.stringify(item)
+  def getCourseware(@PathVariable id: Long): String = dao.resTransaction(session => {
+    val item = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
+      root.select("file")
+    })
+    //    val root = Orm.root(classOf[Courseware])
+    //    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
+    //    val item = session.first(query)
+    JSON.stringifyJs(item)
   })
 
   @GetMapping(Array("/{jid}/video/{id}"))
-  def getVideo(@PathVariable id: Long): String = dao.beginTransaction(session => {
-    val root = Orm.root(classOf[Video])
-    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
-    val item = session.first(query)
-    JSON.stringify(item)
+  def getVideo(@PathVariable id: Long): String = dao.resTransaction(session => {
+    //    val root = Orm.root(classOf[Video])
+    //    val query = Orm.selectFrom(root).where(root.get("id").eql(id))
+    //    val item = session.first(query)
+    val item = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
+      root.select("file")
+    })
+    JSON.stringifyJs(item)
   })
 }

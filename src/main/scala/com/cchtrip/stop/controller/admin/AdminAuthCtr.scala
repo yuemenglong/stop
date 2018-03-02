@@ -1,20 +1,12 @@
 package com.cchtrip.stop.controller.admin
 
-import java.util
 import javax.servlet.http.HttpServletRequest
 
 import com.cchtrip.stop.bean.{AuthBean, Dao, LoginUser}
-import com.cchtrip.stop.entity.Student
-import com.cchtrip.stop.util.{Kit, NamedException}
+import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
-import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.{AuthenticationManager, UsernamePasswordAuthenticationToken}
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.WebAuthenticationDetails
 import org.springframework.web.bind.annotation._
 
 /**

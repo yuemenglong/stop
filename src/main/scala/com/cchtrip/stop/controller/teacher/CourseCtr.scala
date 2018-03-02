@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.teacher
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity._
+import com.cchtrip.stop.entity.res.Video
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -36,21 +37,25 @@ class CourseCtr {
     val ids = res.map(_.id)
 
     def countFn(clazz: Class[_]): Map[Long, Long] = {
-      val root = Orm.root(clazz)
-      session.query(Orm.select(root.get("courseId").as(classOf[Long]),
-        root.count("courseId"))
-        .from(root).where(root.get("courseId").in(ids))
-        .groupBy("courseId")).toMap
+      ids.length match {
+        case 0 => Map[Long, Long]()
+        case _ =>
+          val root = Orm.root(clazz)
+          session.query(Orm.select(root.get("courseId").as(classOf[Long]),
+            root.count("courseId"))
+            .from(root).where(root.get("courseId").in(ids))
+            .groupBy("courseId")).toMap
+      }
     }
 
     val cmap = countFn(classOf[CourseCourseware])
     val vmap = countFn(classOf[CourseVideo])
     val qmap = countFn(classOf[CourseQuestion])
 
-    JSON.stringify(res.map(c => {
-      c.coursewareCount = cmap(c.id)
-      c.videoCount = vmap(c.id)
-      c.questionCount = qmap(c.id)
+    JSON.stringifyJs(res.map(c => {
+      c.coursewareCount = cmap.getOrElse(c.id, 0L)
+      c.videoCount = vmap.getOrElse(c.id, 0L)
+      c.questionCount = qmap.getOrElse(c.id, 0L)
       c
     }))
   })
@@ -69,7 +74,7 @@ class CourseCtr {
     course.id = IdGenerator.generateId
     course.crTime = new Date
     session.execute(Orm.insert(course))
-    JSON.stringify(course)
+    JSON.stringifyJs(course)
   })
 
   @GetMapping(Array("/{id}"))
@@ -79,14 +84,14 @@ class CourseCtr {
     //    root.select("questions").select("sc")
     //    root.select("videos")
     val course = session.first(Orm.selectFrom(root).where(root.get("id").eql(id)))
-    JSON.stringify(course)
+    JSON.stringifyJs(course)
   })
 
   @PutMapping(Array("/{id}"))
   def putCourse(@RequestBody body: String): String = dao.beginTransaction(session => {
     val course = JSON.parse(body, classOf[Course])
     session.execute(Orm.update(course))
-    JSON.stringify(course)
+    JSON.stringifyJs(course)
   })
 
   @DeleteMapping(Array("/{id}"))
@@ -103,25 +108,34 @@ class CourseCtr {
   @GetMapping(Array("/{id}/courseware"))
   def getCourseware(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[CourseCourseware])
-    root.select("courseware")
+    //    root.select("courseware")
     val res = session.query(Orm.selectFrom(root).where(root.get("courseId").eql(id)))
-    JSON.stringify(res)
+    dao.resTransaction(session => {
+      OrmTool.attach(res, "courseware", session)
+    })
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}/video"))
   def getVideo(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[CourseVideo])
-    root.select("video")
+    //    root.select("video")
     val res = session.query(Orm.selectFrom(root).where(root.get("courseId").eql(id)))
-    JSON.stringify(res)
+    dao.resTransaction(session => {
+      OrmTool.attach(res, "video", session)
+    })
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}/question"))
   def getQuestion(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[CourseQuestion])
-    root.select("question")
+    //    root.select("question")
     val res = session.query(Orm.selectFrom(root).where(root.get("courseId").eql(id)))
-    JSON.stringify(res)
+    dao.resTransaction(session => {
+      OrmTool.attach(res, "question", session)
+    })
+    JSON.stringifyJs(res)
   })
 
   @PutMapping(Array("/{id}/courseware"))
@@ -130,7 +144,7 @@ class CourseCtr {
     item.id = IdGenerator.generateId
     item.crTime = new Date
     session.execute(Orm.insert(item))
-    JSON.stringify(item)
+    JSON.stringifyJs(item)
   })
 
   @DeleteMapping(Array("/{id}/courseware/{oid}"))
@@ -145,7 +159,7 @@ class CourseCtr {
     item.id = IdGenerator.generateId
     item.crTime = new Date
     session.execute(Orm.insert(item))
-    JSON.stringify(item)
+    JSON.stringifyJs(item)
   })
 
   @DeleteMapping(Array("/{id}/video/{oid}"))
@@ -160,7 +174,7 @@ class CourseCtr {
     item.id = IdGenerator.generateId
     item.crTime = new Date
     session.execute(Orm.insert(item))
-    JSON.stringify(item)
+    JSON.stringifyJs(item)
   })
 
   @DeleteMapping(Array("/{id}/question/{oid}"))

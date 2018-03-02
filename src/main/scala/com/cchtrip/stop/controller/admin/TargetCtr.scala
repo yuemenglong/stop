@@ -1,11 +1,10 @@
 package com.cchtrip.stop.controller.admin
 
-import java.io.File
 import java.nio.file.Paths
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity._
-import com.cchtrip.stop.util.NamedException
+import com.cchtrip.stop.entity.res.{FileInfo, Target}
+import com.cchtrip.stop.util.{Kit, NamedException}
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -27,10 +26,16 @@ class TargetCtr {
   var dao: Dao = _
   @Value("${app.targetDir}")
   var targetDir: String = _
+  @Value("${app.uploadDir}")
+  var uploadDir: String = _
 
   @PostMapping(Array(""))
-  def post(@RequestBody body: String): String = dao.beginTransaction(session => {
+  def post(@RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Target])
+    val files = JSON.parse(body).asObj().get("files").as(classOf[Array[FileInfo]])
+    if (!files.exists(_.fileName == "index.html")) {
+      throw new NamedException(NamedException.INVALID_PARAM, "没有index.html文件")
+    }
     obj.id = IdGenerator.generateId
     obj.crTime = new Date
     require(obj.file != null)
@@ -38,18 +43,22 @@ class TargetCtr {
     obj.file.crTime = new Date
     obj.file.tag = "target"
     require(obj.baseDir != null)
-    if (!Paths.get(targetDir, obj.baseDir, "index.html").toFile.exists()) {
-      throw new NamedException(NamedException.INVALID_PARAM, "路径下没有index文件")
-    }
+    val path = Paths.get(targetDir, obj.baseDir).toString
+    Kit.mkdir(path)
+    files.foreach(f => {
+      val from = Paths.get(uploadDir, f.fileId).toString
+      val to = Paths.get(path, f.fileName).toString
+      Kit.mv(from, to)
+    })
 
     val ex = Orm.insert(obj)
     ex.insert("file")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @PutMapping(Array("/{id}"))
-  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Target])
     obj.id = id
     require(obj.baseDir != null)
@@ -59,7 +68,7 @@ class TargetCtr {
     val ex = Orm.update(obj)
     ex.update("file")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @GetMapping(Array("/list"))
@@ -67,7 +76,7 @@ class TargetCtr {
            @RequestParam(defaultValue = "0") offset: Long,
            cate0Id: Long,
            cate1Id: Long,
-          ): String = dao.beginTransaction(session => {
+          ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Target])
     root.select("file")
     root.select("cate0")
@@ -81,13 +90,13 @@ class TargetCtr {
     }
     val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
   def count(cate0Id: Long,
             cate1Id: Long,
-           ): String = dao.beginTransaction(session => {
+           ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Target])
     var cond = Orm.cond()
     if (cate0Id != null) {
@@ -98,19 +107,19 @@ class TargetCtr {
     }
     val query = Orm.select(root.count()).from(root).where(cond)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
-  def get(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def get(@PathVariable id: Long): String = dao.resTransaction(session => {
     val res = OrmTool.selectById(classOf[Target], id, session, (root: Root[Target]) => {
       root.select("file")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @DeleteMapping(Array("/{id}"))
-  def delete(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
+  def delete(@PathVariable id: Long): String = dao.resTransaction(fn = session => {
     OrmTool.deleteById(classOf[Target], id, session)
     "{}"
   })

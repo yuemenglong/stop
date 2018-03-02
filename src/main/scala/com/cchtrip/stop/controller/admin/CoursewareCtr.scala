@@ -1,8 +1,7 @@
 package com.cchtrip.stop.controller.admin
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
-import com.cchtrip.stop.entity._
-import com.cchtrip.stop.util.NamedException
+import com.cchtrip.stop.entity.res.Courseware
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -24,7 +23,7 @@ class CoursewareCtr {
   var dao: Dao = _
 
   @PostMapping(Array(""))
-  def post(@RequestBody body: String): String = dao.beginTransaction(session => {
+  def post(@RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Courseware])
     obj.id = IdGenerator.generateId
     obj.crTime = new Date
@@ -35,17 +34,17 @@ class CoursewareCtr {
     val ex = Orm.insert(obj)
     ex.insert("file")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @PutMapping(Array("/{id}"))
-  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.beginTransaction(session => {
+  def put(@PathVariable id: Long, @RequestBody body: String): String = dao.resTransaction(session => {
     val obj = JSON.parse(body, classOf[Courseware])
     obj.id = id
     val ex = Orm.update(obj)
     ex.update("file")
     session.execute(ex)
-    JSON.stringify(obj)
+    JSON.stringifyJs(obj)
   })
 
   @GetMapping(Array("/list"))
@@ -53,7 +52,7 @@ class CoursewareCtr {
            @RequestParam(defaultValue = "0") offset: Long,
            cate0Id: Long,
            cate1Id: Long,
-          ): String = dao.beginTransaction(session => {
+          ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Courseware])
     root.select("file")
     root.select("cate0")
@@ -67,13 +66,13 @@ class CoursewareCtr {
     }
     val query = Orm.selectFrom(root).where(cond).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
   def count(cate0Id: Long,
             cate1Id: Long,
-           ): String = dao.beginTransaction(session => {
+           ): String = dao.resTransaction(session => {
     val root = Orm.root(classOf[Courseware])
     var cond = Orm.cond()
     if (cate0Id != null) {
@@ -84,19 +83,19 @@ class CoursewareCtr {
     }
     val query = Orm.select(root.count()).from(root).where(cond)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}"))
-  def get(@PathVariable id: Long): String = dao.beginTransaction(session => {
+  def get(@PathVariable id: Long): String = dao.resTransaction(session => {
     val res = OrmTool.selectById(classOf[Courseware], id, session, (root: Root[Courseware]) => {
       root.select("file")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @DeleteMapping(Array("/{id}"))
-  def delete(@PathVariable id: Long): String = dao.beginTransaction(fn = session => {
+  def delete(@PathVariable id: Long): String = dao.resTransaction(fn = session => {
     OrmTool.deleteById(classOf[Courseware], id, session)
     "{}"
   })

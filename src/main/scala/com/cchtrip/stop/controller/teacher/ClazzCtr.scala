@@ -25,7 +25,7 @@ class ClazzCtr {
     clazz.id = IdGenerator.generateId
     clazz.crTime = new Date
     session.execute(Orm.insert(clazz))
-    JSON.stringify(clazz)
+    JSON.stringifyJs(clazz)
   })
 
   @DeleteMapping(Array("/{id}"))
@@ -41,7 +41,7 @@ class ClazzCtr {
   @GetMapping(Array("/{id}"))
   def getClazz(@PathVariable id: Long): String = dao.beginTransaction(session => {
     val res = OrmTool.selectById(classOf[Clazz], id, session)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/{id}/students"))
@@ -54,7 +54,7 @@ class ClazzCtr {
       Orm.selectFrom(root).where(root.get("clazzId").eql(id))
     }
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @PutMapping(Array("/{id}"))
@@ -63,7 +63,7 @@ class ClazzCtr {
     clazz.id = id
     OrmTool.clearField(clazz, "studentCount")
     session.execute(Orm.update(clazz))
-    JSON.stringify(clazz)
+    JSON.stringifyJs(clazz)
   })
 
   @PostMapping(Array("/{id}/students"))
@@ -80,17 +80,25 @@ class ClazzCtr {
 
   @GetMapping(Array("/list"))
   def GetClazzsList(@RequestParam(defaultValue = "20") limit: Long,
-                    @RequestParam(defaultValue = "0") offset: Long
+                    @RequestParam(defaultValue = "0") offset: Long,
+                    fields: String,
                    ): String = dao.beginTransaction(session => {
     val root = Orm.root(classOf[Clazz])
-    val query = Orm.select(root, root.count(root.leftJoin("students").get("id"))).from(root)
-      .groupBy("id")
-      .limit(limit).offset(offset)
-    val res = session.query(query).map { case (clazz, count) =>
-      clazz.studentCount = count.toInt
-      clazz
+    if (fields != null) {
+      root.fields(fields.split(","))
+      val query = Orm.select(root).from(root).limit(limit).offset(offset)
+      val res = session.query(query)
+      JSON.stringifyJs(res)
+    } else {
+      val query = Orm.select(root, root.count(root.leftJoin("students").get("id"))).from(root)
+        .groupBy("id")
+        .limit(limit).offset(offset)
+      val res = session.query(query).map { case (clazz, count) =>
+        clazz.studentCount = count.toInt
+        clazz
+      }
+      JSON.stringifyJs(res)
     }
-    JSON.stringify(res)
   })
 
   @GetMapping(Array("/count"))
@@ -98,7 +106,7 @@ class ClazzCtr {
     val root = Orm.root(classOf[Clazz])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @DeleteMapping(Array("/{id}/student/{sid}"))

@@ -1,12 +1,13 @@
 package com.cchtrip.stop.entity
 
+import com.cchtrip.stop.entity.res._
 import io.github.yuemenglong.orm.lang.anno._
 import io.github.yuemenglong.orm.lang.types.Types._
 
 /**
   * Created by <yuemenglong@126.com> on 2017/11/21.
   */
-@Entity
+@Entity(db = "stop")
 class Course extends EntityBase {
   @Column(length = 32)
   var name: String = _
@@ -38,7 +39,7 @@ class Course extends EntityBase {
   var cate1: Category = _
 }
 
-@Entity
+@Entity(db = "stop")
 class CourseCourseware extends EntityBase {
   var courseId: Long = _
   @Pointer
@@ -51,7 +52,7 @@ class CourseCourseware extends EntityBase {
 
 }
 
-@Entity
+@Entity(db = "stop")
 class CourseVideo extends EntityBase {
   var courseId: Long = _
   @Pointer
@@ -62,7 +63,7 @@ class CourseVideo extends EntityBase {
   var video: Video = _
 }
 
-@Entity
+@Entity(db = "stop")
 class CourseQuestion extends EntityBase {
   var courseId: Long = _
   @Pointer

@@ -1,4 +1,4 @@
-package com.cchtrip.stop.entity
+package com.cchtrip.stop.entity.res
 
 import io.github.yuemenglong.orm.lang.anno.{Column, DateTime, Id}
 import io.github.yuemenglong.orm.lang.types.Types._

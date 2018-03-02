@@ -28,19 +28,14 @@ class StudentCtr {
     student.clazzId = 0L
     student.user.ty = "student"
     student.user.id = IdGenerator.generateId
+    student.user.role = "USER"
     student.user.crTime = new Date
-    if (student.avatar == null) {
-      student.avatar = Orm.empty(classOf[FileInfo])
-    }
-    student.avatar.id = IdGenerator.generateId
-    student.avatar.crTime = new Date
-    student.avatar.tag = "avatar"
+
     val ex = Orm.insert(student)
     ex.insert("user")
-    ex.insert("avatar")
     session.execute(ex)
     AuthService.regist(student.user)
-    JSON.stringify(student)
+    JSON.stringifyJs(student)
   })
 
   @DeleteMapping(Array("/{id}"))
@@ -63,7 +58,7 @@ class StudentCtr {
       root.select("user")
       root.select("avatar")
     })
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @PutMapping(Array("/{id}"))
@@ -75,7 +70,7 @@ class StudentCtr {
     ex.update("avatar")
     session.execute(ex)
     AuthService.regist(student.user)
-    JSON.stringify(student)
+    JSON.stringifyJs(student)
   })
 
   @GetMapping(Array("/list"))
@@ -87,7 +82,7 @@ class StudentCtr {
     root.select("avatar")
     val query = Orm.selectFrom(root).limit(limit).offset(offset)
     val res = session.query(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 
   @GetMapping(Array("/count"))
@@ -95,6 +90,6 @@ class StudentCtr {
     val root = Orm.root(classOf[Student])
     val query = Orm.select(root.count()).from(root)
     val res = session.first(query)
-    JSON.stringify(res)
+    JSON.stringifyJs(res)
   })
 }

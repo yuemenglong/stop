@@ -32,7 +32,7 @@ class ErrorProcessor {
       case _ => e.getClass.getName
     }
     val map = Map("name" -> name, "message" -> e.getMessage)
-    val ret = JSON.stringify(map)
+    val ret = JSON.stringifyJs(map)
     ret
   }
 }

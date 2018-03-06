@@ -37,6 +37,9 @@ class UserQuizJobCtr {
     val query = Orm.selectFrom(root).where(root.get("studentId").eql(uid)
       .and(cond)).limit(limit).offset(offset)
     val res = session.query(query)
+    if (res.isEmpty) {
+      return "[]"
+    }
     val ids = res.map(_.id)
     val itemCountMap = {
       val root = Orm.root(classOf[QuizJobItem])

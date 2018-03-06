@@ -22,10 +22,10 @@ class Target extends EntityBase {
 
   @Column(nullable = false)
   @Index(unique = true)
-  var baseDir: String = _
+  var baseDir: String = _ // 题目路径
 
   @Pointer
-  var file: FileInfo = _
+  var file: FileInfo = _ // 答案ppt
 
   var cate0Id: Long = _
   @Pointer

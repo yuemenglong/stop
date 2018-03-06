@@ -2,6 +2,7 @@ package com.cchtrip.stop.controller.teacher
 
 import com.cchtrip.stop.bean.{Dao, IdGenerator}
 import com.cchtrip.stop.entity.{Clazz, Student}
+import com.cchtrip.stop.util.NamedException
 import io.github.yuemenglong.json.JSON
 import io.github.yuemenglong.orm.Orm
 import io.github.yuemenglong.orm.lang.types.Types._
@@ -22,6 +23,10 @@ class ClazzCtr {
   @PostMapping(Array(""))
   def postClazz(@RequestBody body: String): String = dao.beginTransaction(session => {
     val clazz = JSON.parse(body, classOf[Clazz])
+    clazz.name match {
+      case null | "" => throw NamedException(NamedException.INVALID_PARAM, "名字为空")
+      case _ =>
+    }
     clazz.id = IdGenerator.generateId
     clazz.crTime = new Date
     session.execute(Orm.insert(clazz))
